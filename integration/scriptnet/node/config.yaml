@@ -1,0 +1,14 @@
+# Pando configuration
+genesis:
+  hash: "0xee81d532c5afd8595245434dedb63f53e60b2520b9c738cf0f66204409ea2fd2"
+p2p:
+  port: 12000
+  seeds: 18.184.113.23:12000
+  seedPeerOnlyOutbound: true
+  address: 127.0.0.1
+log:
+  levels: "*:info,guardian:debug"
+storage:
+  statePruningRetainedBlocks: 2048
+rpc:
+  enabled: true
