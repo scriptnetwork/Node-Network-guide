@@ -18,11 +18,11 @@ import (
 // stakeRewardDistributionCmd represents the stake reward distribution command
 // Example:
 //
-//	scriptcli tx distribute_staking_reward --chain="privatenet" --holder=0x36A8d78C0EaD519Bd155962358A3d57A404bC20d --beneficiary=0x88884a84d980bbfb7588888126fb903486bb8888 --split_basis_point=100 --seq=8
+//	scriptcli tx distribute_staking_reward --chain="scriptnet" --holder=0x36A8d78C0EaD519Bd155962358A3d57A404bC20d --beneficiary=0x88884a84d980bbfb7588888126fb903486bb8888 --split_basis_point=100 --seq=8
 var stakeRewardDistributionCmd = &cobra.Command{
 	Use:     "distribute_staking_reward",
 	Short:   "Configure the distribution of the guardian/elite edge node staking reward",
-	Example: `scriptcli tx distribute_staking_reward --chain="privatenet" --holder=0x36A8d78C0EaD519Bd155962358A3d57A404bC20d --beneficiary=0x88884a84d980bbfb7588888126fb903486bb8888 --split_basis_point=100 --seq=8`,
+	Example: `scriptcli tx distribute_staking_reward --chain="scriptnet" --holder=0x36A8d78C0EaD519Bd155962358A3d57A404bC20d --beneficiary=0x88884a84d980bbfb7588888126fb903486bb8888 --split_basis_point=100 --seq=8`,
 	Run:     doStakeRewardDistributionCmd,
 }
 

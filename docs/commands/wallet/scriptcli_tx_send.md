@@ -13,7 +13,7 @@ scriptcli tx send [flags]
 ### Examples
 
 ```
-scriptcli tx send --chain="privatenet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1
+scriptcli tx send --chain="scriptnet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1
 ```
 
 ### Options

@@ -36,8 +36,8 @@ type StakeDeposit struct {
 }
 
 // Example:
-// pushd $SCRIPT_HOME/integration/privatenet/node
-// generate_genesis -chainID=privatenet -erc20snapshot=./data/genesis_script_erc20_snapshot.json -stake_deposit=./data/genesis_stake_deposit.json -genesis=./genesis
+// pushd $SCRIPT_HOME/integration/scriptnet/node
+// generate_genesis -chainID=scriptnet -erc20snapshot=./data/genesis_script_erc20_snapshot.json -stake_deposit=./data/genesis_stake_deposit.json -genesis=./genesis
 func main() {
 	chainID, erc20SnapshotJSONFilePath, stakeDepositFilePath, genesisSnapshotFilePath := parseArguments()
 

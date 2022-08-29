@@ -19,11 +19,11 @@ import (
 // splitRuleCmd represents the split rule command
 // Example:
 //
-//	scriptcli tx split_rule --chain="privatenet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --seq=8 --resource_id=die_another_day --addresses=2E833968E5bB786Ae419c4d13189fB081Cc43bab,98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --percentages=30,30 --duration=1000
+//	scriptcli tx split_rule --chain="scriptnet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --seq=8 --resource_id=die_another_day --addresses=2E833968E5bB786Ae419c4d13189fB081Cc43bab,98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --percentages=30,30 --duration=1000
 var splitRuleCmd = &cobra.Command{
 	Use:     "split_rule",
 	Short:   "Initiate or update a split rule",
-	Example: `scriptcli tx split_rule --chain="privatenet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --seq=8 --resource_id=die_another_day --addresses=2E833968E5bB786Ae419c4d13189fB081Cc43bab,98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --percentages=30,30 --duration=1000`,
+	Example: `scriptcli tx split_rule --chain="scriptnet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --seq=8 --resource_id=die_another_day --addresses=2E833968E5bB786Ae419c4d13189fB081Cc43bab,98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --percentages=30,30 --duration=1000`,
 	Run:     doSplitRuleCmd,
 }
 

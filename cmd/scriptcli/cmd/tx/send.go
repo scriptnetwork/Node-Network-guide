@@ -21,13 +21,13 @@ import (
 // sendCmd represents the send command
 // Example:
 //
-//	scriptcli tx send --chain="privatenet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1
-//	scriptcli tx send --chain="privatenet" --path "m/44'/60'/0'/0/0" --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1 --wallet=trezor
-//	scriptcli tx send --chain="privatenet" --path "m/44'/60'/0'/0" --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1 --wallet=nano
+//	scriptcli tx send --chain="scriptnet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1
+//	scriptcli tx send --chain="scriptnet" --path "m/44'/60'/0'/0/0" --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1 --wallet=trezor
+//	scriptcli tx send --chain="scriptnet" --path "m/44'/60'/0'/0" --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1 --wallet=nano
 var sendCmd = &cobra.Command{
 	Use:     "send",
 	Short:   "Send tokens",
-	Example: `scriptcli tx send --chain="privatenet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1`,
+	Example: `scriptcli tx send --chain="scriptnet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1`,
 	Run:     doSendCmd,
 }
 

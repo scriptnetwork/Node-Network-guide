@@ -13,7 +13,7 @@ scriptcli tx deposit [flags]
 ### Examples
 
 ```
-scriptcli tx deposit --chain="privatenet" --source=2E833968E5bB786Ae419c4d13189fB081Cc43bab --holder=2E833968E5bB786Ae419c4d13189fB081Cc43bab --stake=6000000 --purpose=0 --seq=7
+scriptcli tx deposit --chain="scriptnet" --source=2E833968E5bB786Ae419c4d13189fB081Cc43bab --holder=2E833968E5bB786Ae419c4d13189fB081Cc43bab --stake=6000000 --purpose=0 --seq=7
 ```
 
 ### Options

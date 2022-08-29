@@ -257,7 +257,7 @@ func TestSendTxSignable(t *testing.T) {
 }
 
 func TestSendTxSignable2(t *testing.T) {
-	chainID := "privatenet"
+	chainID := "scriptnet"
 	ten18 := new(big.Int).SetUint64(1000000000000000000) // 10^18
 	scptWei := new(big.Int).Mul(new(big.Int).SetUint64(10), ten18)
 	spayWei := new(big.Int).Mul(new(big.Int).SetUint64(20), ten18)

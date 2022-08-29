@@ -1111,7 +1111,7 @@ func mapChainIDWithoutOffset(chainIDStr string) *big.Int {
 		return big.NewInt(4)
 	} else if chainIDStr == "testnet" {
 		return big.NewInt(5)
-	} else if chainIDStr == "privatenet" {
+	} else if chainIDStr == "scriptnet" {
 		return big.NewInt(6)
 	}
 
