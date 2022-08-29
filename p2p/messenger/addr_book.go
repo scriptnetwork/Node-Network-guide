@@ -637,7 +637,8 @@ func (a *AddrBook) moveToOld(ka *knownAddress) {
 }
 
 // doublesha256(  key + sourcegroup +
-//                int64(doublesha256(key + group + sourcegroup))%bucket_per_group  ) % num_new_buckets
+//
+//	int64(doublesha256(key + group + sourcegroup))%bucket_per_group  ) % num_new_buckets
 func (a *AddrBook) calcNewBucket(addr, src *nu.NetAddress) int {
 	data1 := []byte{}
 	data1 = append(data1, []byte(a.key)...)
@@ -658,7 +659,8 @@ func (a *AddrBook) calcNewBucket(addr, src *nu.NetAddress) int {
 }
 
 // doublesha256(  key + group +
-//                int64(doublesha256(key + addr))%buckets_per_group  ) % num_old_buckets
+//
+//	int64(doublesha256(key + addr))%buckets_per_group  ) % num_old_buckets
 func (a *AddrBook) calcOldBucket(addr *nu.NetAddress) int {
 	data1 := []byte{}
 	data1 = append(data1, []byte(a.key)...)
@@ -739,10 +741,10 @@ func (a *AddrBook) generateAddrBookKey() string {
 //-----------------------------------------------------------------------------
 
 /*
-   knownAddress
+knownAddress
 
-   tracks information about a known network address that is used
-   to determine how viable an address is.
+tracks information about a known network address that is used
+to determine how viable an address is.
 */
 type knownAddress struct {
 	Addr        *nu.NetAddress
@@ -815,16 +817,16 @@ func (ka *knownAddress) removeBucketRef(bucketIdx int) int {
 }
 
 /*
-   An address is bad if the address in question has not been tried in the last
-   minute and meets one of the following criteria:
+An address is bad if the address in question has not been tried in the last
+minute and meets one of the following criteria:
 
-   1) It claims to be from the future
-   2) It hasn't been seen in over a month
-   3) It has failed at least three times and never succeeded
-   4) It has failed ten times in the last week
+1) It claims to be from the future
+2) It hasn't been seen in over a month
+3) It has failed at least three times and never succeeded
+4) It has failed ten times in the last week
 
-   All addresses that meet these criteria are assumed to be worthless and not
-   worth keeping hold of.
+All addresses that meet these criteria are assumed to be worthless and not
+worth keeping hold of.
 */
 func (ka *knownAddress) isBad() bool {
 	// Has been attempted in the last minute --> good

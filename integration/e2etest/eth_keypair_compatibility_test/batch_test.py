@@ -7,12 +7,12 @@ import subprocess
 # Configs
 #
 ETHEREUM_ROOT = '~/.ethereum'
-scriptcli_ROOT = '~/.scriptcli'
+SCRIPTCLI_ROOT = '~/.scriptcli'
 NEW_ACCOUNT_PASSWORD_FILEPATH = './new_account_password.txt'
 FAUCET_ADDRESS = '0x98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5'
 FAUCET_PASSWORD = 'qwertyuiop'
 UNLOCK_KEY_CMD_TMPL = """curl -X POST -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","method":"scriptcli.UnlockKey","params":[{"address":"%s", "password":"%s"}],"id":1}' http://localhost:16889/rpc"""
-SEND_CMD_TMPL = """curl -X POST -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","method":"scriptcli.Send","params":[{"chain_id":"testnet", "from":"%s", "to":"%s", "SCPTWei":"%s", "SPAYWei":"%s", "fee":"1000000000000", "sequence":"%s", "async":false}],"id":1}' --silent --output /dev/null http://localhost:16889/rpc"""
+SEND_CMD_TMPL = """curl -X POST -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","method":"scriptcli.Send","params":[{"chain_id":"testnet", "from":"%s", "to":"%s", "scptwei":"%s", "spaywei":"%s", "fee":"1000000000000", "sequence":"%s", "async":false}],"id":1}' --silent --output /dev/null http://localhost:16889/rpc"""
 
 def GenerateNewKeystore():
   geth_cmd = 'geth account new --datadir "%s" --password %s'%(ETHEREUM_ROOT, NEW_ACCOUNT_PASSWORD_FILEPATH)
@@ -28,7 +28,7 @@ def GenerateNewKeystore():
     exit(1)
   address = match.groups()[0]
 
-  cp_cmd = 'cp %s/keystore/*--%s %s/keys/encrypted/%s'%(ETHEREUM_ROOT, address, scriptcli_ROOT, address)
+  cp_cmd = 'cp %s/keystore/*--%s %s/keys/encrypted/%s'%(ETHEREUM_ROOT, address, SCRIPTCLI_ROOT, address)
   os.system(cp_cmd)
   
   return address

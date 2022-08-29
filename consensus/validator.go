@@ -4,16 +4,14 @@ import (
 	"math/big"
 	"math/rand"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/core"
+	log "github.com/sirupsen/logrus"
 )
 
 const MaxValidatorCount int = 31
 
-//
 // -------------------------------- FixedValidatorManager ----------------------------------
-//
 var _ core.ValidatorManager = &FixedValidatorManager{}
 
 // FixedValidatorManager is an implementation of ValidatorManager interface that selects a fixed validator as the proposer.
@@ -64,9 +62,7 @@ func (m *FixedValidatorManager) GetNextValidatorSet(blockHash common.Hash) *core
 	return valSet
 }
 
-//
 // -------------------------------- RotatingValidatorManager ----------------------------------
-//
 var _ core.ValidatorManager = &RotatingValidatorManager{}
 
 // RotatingValidatorManager is an implementation of ValidatorManager interface that selects a random validator as

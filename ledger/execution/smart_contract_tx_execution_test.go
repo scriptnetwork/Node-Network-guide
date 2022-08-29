@@ -7,12 +7,12 @@ import (
 	"math/big"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/core"
 	"github.com/scripttoken/script/ledger/types"
 	"github.com/scripttoken/script/ledger/vm"
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSimpleSmartContractDeploymentAndExecution(t *testing.T) {
@@ -66,40 +66,40 @@ func TestSimpleSmartContractDeploymentAndExecution(t *testing.T) {
 //
 // pragma solidity ^0.4.18;
 //
-// library SafeMath {
-//     function sub(uint a, uint b) internal pure returns (uint) {
-//         assert(b <= a);
-//         return a - b;
-//     }
+//	library SafeMath {
+//	    function sub(uint a, uint b) internal pure returns (uint) {
+//	        assert(b <= a);
+//	        return a - b;
+//	    }
 //
-//     function add(uint a, uint b) internal pure returns (uint) {
-//         uint c = a + b;
-//         assert(c >= a);
-//         return c;
-//     }
-// }
+//	    function add(uint a, uint b) internal pure returns (uint) {
+//	        uint c = a + b;
+//	        assert(c >= a);
+//	        return c;
+//	    }
+//	}
 //
-// contract TestCustomToken {
-//     using SafeMath for uint;
-//     mapping (address => uint) balances;
-//     address public constant ADMIN = 0x4d4ce78b09F8A06C0d3063a315dC9c011F6e876E;
+//	contract TestCustomToken {
+//	    using SafeMath for uint;
+//	    mapping (address => uint) balances;
+//	    address public constant ADMIN = 0x4d4ce78b09F8A06C0d3063a315dC9c011F6e876E;
 //
-//     function mint() public {
-//         require(msg.sender == ADMIN);
-//         balances[ADMIN] = balances[ADMIN].add(10000);
-//     }
+//	    function mint() public {
+//	        require(msg.sender == ADMIN);
+//	        balances[ADMIN] = balances[ADMIN].add(10000);
+//	    }
 //
-//     function balanceOf(address _owner) public constant returns (uint balance) {
-//         return balances[_owner];
-//     }
+//	    function balanceOf(address _owner) public constant returns (uint balance) {
+//	        return balances[_owner];
+//	    }
 //
-//     function transfer(address _to, uint _value) public returns (bool success) {
-//         require(balances[msg.sender] >= _value && _value > 0);
-//         balances[msg.sender] = balances[msg.sender].sub(_value);
-//         balances[_to] = balances[_to].add(_value);
-//         return true;
-//     }
-// }
+//	    function transfer(address _to, uint _value) public returns (bool success) {
+//	        require(balances[msg.sender] >= _value && _value > 0);
+//	        balances[msg.sender] = balances[msg.sender].sub(_value);
+//	        balances[_to] = balances[_to].add(_value);
+//	        return true;
+//	    }
+//	}
 func TestCustomTokenSmartContract(t *testing.T) {
 	assert := assert.New(t)
 
@@ -256,7 +256,7 @@ func deploySmartContract(et *execTest, deployerPrivAcc *types.PrivAccount,
 	sequence uint64, assert *assert.Assertions) (contractAddr common.Address) {
 	deployerAcc := deployerPrivAcc.Account
 	deployerAddr := deployerAcc.Address
-	gasPrice := types.MinimumGasPrice
+	gasPrice := types.MinimumGasPriceJune2021
 	deploySCTx := &types.SmartContractTx{
 		From: types.TxInput{
 			Address:  deployerAddr,
@@ -319,7 +319,7 @@ func callSmartContract(et *execTest, contractAddr common.Address, callerPrivAcc 
 	gasLimit uint64, data common.Bytes, sequence uint64, assert *assert.Assertions) (vmRet common.Bytes, vmErr error, gasUsed uint64) {
 	callerAcc := callerPrivAcc.Account
 	callerAddr := callerAcc.Address
-	gasPrice := types.MinimumGasPrice
+	gasPrice := types.MinimumGasPriceJune2021
 	callSCTX := &types.SmartContractTx{
 		From: types.TxInput{
 			Address:  callerAddr,
@@ -358,7 +358,7 @@ func executeSmartContract(et *execTest, contractAddr common.Address, callerPrivA
 	callerAcc := callerPrivAcc.Account
 	callerAddr := callerAcc.Address
 	retrievedCallerAccBeforeExec := et.state().Delivered().GetAccount(callerAddr)
-	gasPrice := types.MinimumGasPrice
+	gasPrice := types.MinimumGasPriceJune2021
 	execSCTX := &types.SmartContractTx{
 		From: types.TxInput{
 			Address:  callerAddr,

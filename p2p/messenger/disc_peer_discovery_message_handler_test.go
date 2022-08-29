@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package messenger
@@ -5,8 +6,8 @@ package messenger
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	pr "github.com/scripttoken/script/p2p/peer"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPeerDiscoveryMessageHandler(t *testing.T) {
@@ -353,7 +354,7 @@ func TestPeerDiscoveryMessageHandler(t *testing.T) {
 		assert.True(discDetected)
 	}
 
-	allPeers := discMgr.peerTable.GetAllPeers()
+	allPeers := discMgr.peerTable.GetAllPeers(true)
 	assert.Equal(numDiscAddresses+2, len(*allPeers))
 	t.Logf("---------------- All peers ----------------")
 	for _, peer := range *allPeers {

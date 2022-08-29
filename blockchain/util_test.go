@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 package blockchain
@@ -5,8 +6,8 @@ package blockchain
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/core"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestChainUtil(t *testing.T) {

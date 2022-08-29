@@ -8,9 +8,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	cmn "github.com/scripttoken/script/p2pl/common"
 	"github.com/scripttoken/script/p2pl/transport/buffer/flowrate"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/libp2p/go-libp2p-core/network"
 )

@@ -11,21 +11,19 @@ import (
 	"sync/atomic"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/common/timer"
 	"github.com/scripttoken/script/p2p/connection/flowrate"
 	"github.com/scripttoken/script/p2p/types"
 	p2ptypes "github.com/scripttoken/script/p2p/types"
 	"github.com/scripttoken/script/rlp"
+	log "github.com/sirupsen/logrus"
 )
 
 var logger *log.Entry = log.WithFields(log.Fields{"prefix": "p2p"})
 
-//
 // Connection models the connection between the current node and a peer node.
 // A connection has a ChannelGroup which can contain multiple Channels
-//
 type Connection struct {
 	netconn net.Conn
 
@@ -66,9 +64,7 @@ type Connection struct {
 	stopped bool
 }
 
-//
 // ConnectionConfig specifies the configurations of the Connection
-//
 type ConnectionConfig struct {
 	SendRate        int64
 	RecvRate        int64
@@ -110,6 +106,8 @@ func CreateConnection(netconn net.Conn, config ConnectionConfig) *Connection {
 	channelPing := createDefaultChannel(common.ChannelIDPing)
 	channelGuardian := createDefaultChannel(common.ChannelIDGuardian)
 	channelNATMapping := createDefaultChannel(common.ChannelIDNATMapping)
+	channelEliteEdgeNodeVote := createDefaultChannel(common.ChannelIDEliteEdgeNodeVote)
+	channelEliteAggregatedEdgeNodeVotes := createDefaultChannel(common.ChannelIDAggregatedEliteEdgeNodeVotes)
 	channels := []*Channel{
 		&channelCheckpoint,
 		&channelHeader,
@@ -121,6 +119,8 @@ func CreateConnection(netconn net.Conn, config ConnectionConfig) *Connection {
 		&channelPing,
 		&channelGuardian,
 		&channelNATMapping,
+		&channelEliteEdgeNodeVote,
+		&channelEliteAggregatedEdgeNodeVotes,
 	}
 
 	success, channelGroup := createChannelGroup(getDefaultChannelGroupConfig(), channels)
@@ -205,7 +205,7 @@ func (conn *Connection) Stop() {
 	logger.Warnf("Stopping connection, local: %v, remote: %v", conn.GetNetconn().LocalAddr(), conn.GetNetconn().RemoteAddr())
 	err := conn.netconn.Close()
 	if err != nil {
-		logger.Errorf("Failed to close connection: %v", err)
+		logger.Warnf("Failed to close connection: %v", err)
 	}
 
 	if conn.cancel != nil {
@@ -319,7 +319,7 @@ func (conn *Connection) sendRoutine() {
 			return
 		}
 		if err != nil {
-			logger.Errorf("sendRoutine error: %v", err)
+			logger.Warnf("sendRoutine error: %v", err)
 			conn.stopForError(err)
 			return
 		}
@@ -330,7 +330,7 @@ func (conn *Connection) sendPingSignal() error {
 	if atomic.LoadUint32(&conn.pendingPings) >= conn.config.MaxPendingPings {
 		//conn.onError(nil)
 		conn.stopForError(nil)
-		logger.Errorf("Peer not responding to ping %v", conn.netconn.RemoteAddr())
+		logger.Warnf("Peer not responding to ping %v", conn.netconn.RemoteAddr())
 		return fmt.Errorf("Peer not responding to ping %v", conn.netconn.RemoteAddr())
 	}
 	pingPacket := &Packet{
@@ -556,7 +556,7 @@ func (conn *Connection) GetBufReader() *bufio.Reader {
 }
 
 func (conn *Connection) stopForError(r interface{}) {
-	logger.Errorf("Connection error: %v", r)
+	logger.Warnf("Connection error: %v", r)
 	if atomic.CompareAndSwapUint32(&conn.errored, 0, 1) {
 		conn.Stop()
 		if conn.onError != nil {

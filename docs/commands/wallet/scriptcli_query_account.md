@@ -13,7 +13,7 @@ scriptcli query account [flags]
 ### Examples
 
 ```
-scriptcli query account --address=0x98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5
+scriptcli query account --address=0x2E833968E5bB786Ae419c4d13189fB081Cc43bab
 ```
 
 ### Options

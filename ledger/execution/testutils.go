@@ -91,7 +91,7 @@ func NewExecTest() *execTest {
 	return et
 }
 
-//reset everything. state is empty
+// reset everything. state is empty
 func (et *execTest) reset() {
 	et.accIn = types.MakeAccWithInitBalance("foo", types.NewCoins(700000, 50*getMinimumTxFee()))
 	et.accOut = types.MakeAccWithInitBalance("bar", types.NewCoins(700000, 50*getMinimumTxFee()))
@@ -109,7 +109,7 @@ func (et *execTest) reset() {
 		},
 	}
 	db := backend.NewMemDatabase()
-	ledgerState := st.NewLedgerState(chainID, db)
+	ledgerState := st.NewLedgerState(chainID, db, nil)
 	//ledgerState.ResetState(initHeight, initRootHash)
 	ledgerState.ResetState(initBlock)
 
@@ -123,7 +123,7 @@ func (et *execTest) reset() {
 	valMgr := NewTestValidatorManager(propser, valSet)
 
 	chain := blockchain.CreateTestChain()
-	executor := NewExecutor(db, chain, ledgerState, consensus, valMgr)
+	executor := NewExecutor(db, chain, ledgerState, consensus, valMgr, nil)
 
 	et.chainID = chainID
 	et.executor = executor
@@ -165,32 +165,12 @@ func (et *execTest) signSendTx(tx *types.SendTx, accsIn ...types.PrivAccount) {
 	types.SignSendTx(et.chainID, tx, accsIn...)
 }
 
-func (et *execTest) signEdgeStakeTx(tx *types.EdgeStakeTx, accsIn ...types.PrivAccount) {
-	types.SignEdgeStakeTx(et.chainID, tx, accsIn...)
-}
-
 func (et *execTest) state() *st.LedgerState {
 	return et.executor.state
 }
 
 // returns the final balance and expected balance for input and output accounts
 func (et *execTest) execSendTx(tx *types.SendTx, screenTx bool) (res result.Result, inGot, inExp, outGot, outExp types.Coins) {
-	initBalIn := et.state().Delivered().GetAccount(et.accIn.Account.Address).Balance
-	initBalOut := et.state().Delivered().GetAccount(et.accOut.Account.Address).Balance
-
-	if screenTx {
-		_, res = et.executor.ScreenTx(tx)
-	} else {
-		_, res = et.executor.ExecuteTx(tx)
-	}
-
-	endBalIn := et.state().Delivered().GetAccount(et.accIn.Account.Address).Balance
-	endBalOut := et.state().Delivered().GetAccount(et.accOut.Account.Address).Balance
-	decrBalInExp := tx.Outputs[0].Coins.Plus(tx.Fee) //expected decrease in balance In
-	return res, endBalIn, initBalIn.Minus(decrBalInExp), endBalOut, initBalOut.Plus(tx.Outputs[0].Coins)
-}
-
-func (et *execTest) execEdgeStakeTx(tx *types.EdgeStakeTx, screenTx bool) (res result.Result, inGot, inExp, outGot, outExp types.Coins) {
 	initBalIn := et.state().Delivered().GetAccount(et.accIn.Account.Address).Balance
 	initBalOut := et.state().Delivered().GetAccount(et.accOut.Account.Address).Balance
 
@@ -229,7 +209,7 @@ func (et *execTest) SetAcc(accs ...types.PrivAccount) {
 }
 
 func getMinimumTxFee() int64 {
-	return int64(types.MinimumTransactionFeeSPAYWei)
+	return int64(types.MinimumTransactionFeeSPAYWeiJune2021)
 }
 
 func createServicePaymentTx(chainID string, source, target *types.PrivAccount, amount int64, srcSeq, tgtSeq, paymentSeq, reserveSeq int, resourceID string) *types.ServicePaymentTx {
@@ -302,9 +282,9 @@ func setupForServicePayment(ast *assert.Assertions) (et *execTest, resourceID st
 		Duration:    1000,
 	}
 	reserveFundTx.Source.Signature = alice.Sign(reserveFundTx.SignBytes(et.chainID))
-	res := et.executor.getTxExecutor(reserveFundTx).sanityCheck(et.chainID, et.state().Delivered(), reserveFundTx)
+	res := et.executor.getTxExecutor(reserveFundTx).sanityCheck(et.chainID, et.state().Delivered(), core.DeliveredView, reserveFundTx)
 	ast.True(res.IsOK(), res.String())
-	_, res = et.executor.getTxExecutor(reserveFundTx).process(et.chainID, et.state().Delivered(), reserveFundTx)
+	_, res = et.executor.getTxExecutor(reserveFundTx).process(et.chainID, et.state().Delivered(), core.DeliveredView, reserveFundTx)
 	ast.True(res.IsOK(), res.String())
 
 	return et, resourceID, alice, bob, carol, aliceInitBalance, bobInitBalance, carolInitBalance
@@ -348,7 +328,11 @@ func setupForSmartContract(ast *assert.Assertions, numAccounts int) (et *execTes
 
 	for i := 0; i < numAccounts; i++ {
 		secret := "acc_secret_" + strconv.FormatInt(int64(i), 16)
-		privAccount := types.MakeAccWithInitBalance(secret, types.NewCoins(0, int64(9000000*types.MinimumGasPrice)))
+		privAccount := types.MakeAccWithInitBalance(secret,
+			types.Coins{
+				big.NewInt(0),
+				big.NewInt(1).Mul(big.NewInt(9000000), big.NewInt(int64(types.MinimumGasPriceJune2021))),
+			})
 		privAccounts = append(privAccounts, privAccount)
 		et.acc2State(privAccount)
 	}

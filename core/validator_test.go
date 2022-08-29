@@ -8,8 +8,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidatorSet(t *testing.T) {

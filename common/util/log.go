@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/scripttoken/script/common"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"github.com/scripttoken/script/common"
 )
 
 var logLevels map[string]string

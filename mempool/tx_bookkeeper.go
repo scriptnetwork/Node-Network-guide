@@ -14,9 +14,7 @@ const defaultMaxNumTxs = uint(200000)
 
 const maxTxLife = 1 * time.Minute
 
-//
 // transactionBookkeeper keeps tracks of recently seen transactions
-//
 type transactionBookkeeper struct {
 	mutex *sync.Mutex
 

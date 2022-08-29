@@ -10,9 +10,7 @@ import (
 	ks "github.com/scripttoken/script/wallet/softwallet/keystore"
 )
 
-//
 // Usage: encrypt_sk -password=<password> -sk=<private_key_hex>
-//
 func main() {
 	keysDirPathPtr := flag.String("dir", "./", "the folder to generate the encrypted key file")
 	passwordPtr := flag.String("password", "", "the password for the private key")

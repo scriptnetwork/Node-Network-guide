@@ -8,8 +8,6 @@ import (
 	"testing"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/common/result"
 	"github.com/scripttoken/script/core"
@@ -17,6 +15,8 @@ import (
 	p2psim "github.com/scripttoken/script/p2p/simulation"
 	p2ptypes "github.com/scripttoken/script/p2p/types"
 	"github.com/scripttoken/script/rlp"
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMempoolBasics(t *testing.T) {
@@ -474,7 +474,7 @@ func (tl *TestLedger) GetCurrentBlock() *core.Block {
 	return nil
 }
 
-func (tl *TestLedger) ProposeBlockTxs(block *core.Block) (stateRootHash common.Hash, blockRawTxs []common.Bytes, res result.Result) {
+func (tl *TestLedger) ProposeBlockTxs(block *core.Block, shouldIncludeValidatorUpdateTxs bool) (stateRootHash common.Hash, blockRawTxs []common.Bytes, res result.Result) {
 	return common.Hash{}, []common.Bytes{}, result.OK
 }
 

@@ -1,10 +1,10 @@
 ## scriptcli daemon
 
-Run the scriptcli Daemon
+Run the ScriptCli Daemon
 
 ### Synopsis
 
-Run the scriptcli Daemon
+Run the ScriptCli Daemon
 
 ### Options
 

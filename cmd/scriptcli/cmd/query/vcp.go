@@ -4,18 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/utils"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/rpc"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	rpcc "github.com/ybbus/jsonrpc"
 )
 
 // vcpCmd represents the vcp command.
 // Example:
-//		scriptcli query vcp --height=10
+//
+//	scriptcli query vcp --height=10
 var vcpCmd = &cobra.Command{
 	Use:     "vcp",
 	Short:   "Get validator candidate pool",

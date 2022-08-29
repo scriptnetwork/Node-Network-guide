@@ -14,7 +14,8 @@ import (
 
 // statusCmd represents the account command.
 // Example:
-//		scriptcli query status
+//
+//	scriptcli query status
 var statusCmd = &cobra.Command{
 	Use:     "status",
 	Short:   "Get blockchain status",

@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/rlp"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPacketEmptiness(t *testing.T) {

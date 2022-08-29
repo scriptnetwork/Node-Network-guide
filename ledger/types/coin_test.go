@@ -33,7 +33,7 @@ func TestCoins(t *testing.T) {
 	assert.True(NewCoins(8, 25).IsEqual(a.Plus(b)))
 }
 
-//Test operations on invalid coins
+// Test operations on invalid coins
 func TestInvalidCoin(t *testing.T) {
 	assert := assert.New(t)
 

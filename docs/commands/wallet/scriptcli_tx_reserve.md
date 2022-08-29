@@ -13,7 +13,7 @@ scriptcli tx reserve [flags]
 ### Examples
 
 ```
-scriptcli tx reserve --chain="scriptnet" --from=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --fund=900 --collateral=1203 --seq=6 --duration=1002 --resource_ids=die_another_day,hello
+scriptcli tx reserve --chain="privatenet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --fund=900 --collateral=1203 --seq=6 --duration=1002 --resource_ids=die_another_day,hello
 ```
 
 ### Options

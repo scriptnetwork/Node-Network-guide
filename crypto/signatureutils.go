@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
+//go:build !nacl && !js && !nocgo
 // +build !nacl,!js,!nocgo
 
 package crypto
@@ -27,6 +28,8 @@ import (
 	"github.com/scripttoken/script/common/math"
 	"github.com/scripttoken/script/crypto/secp256k1"
 )
+
+const SignatureLength = 64 + 1 // 64 bytes ECDSA signature + 1 byte recovery id
 
 // ecrecover returns the uncompressed public key that created the given signature.
 func ecrecover(hash, sig []byte) ([]byte, error) {

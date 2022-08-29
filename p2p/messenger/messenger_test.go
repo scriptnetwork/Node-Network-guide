@@ -6,13 +6,13 @@ import (
 	"strconv"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/crypto"
 	"github.com/scripttoken/script/p2p"
 	p2ptypes "github.com/scripttoken/script/p2p/types"
 	"github.com/scripttoken/script/rlp"
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMessengerBroadcastMessages(t *testing.T) {

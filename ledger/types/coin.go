@@ -25,8 +25,8 @@ type Coins struct {
 }
 
 type CoinsJSON struct {
-	SCPTWei *common.JSONBig `json:"SCPTWei"`
-	SPAYWei *common.JSONBig `json:"SPAYWei"`
+	SCPTWei *common.JSONBig `json:"scptwei"`
+	SPAYWei *common.JSONBig `json:"spaywei"`
 }
 
 func NewCoinsJSON(coin Coins) CoinsJSON {

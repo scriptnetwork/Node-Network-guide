@@ -4,18 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/utils"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/rpc"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	rpcc "github.com/ybbus/jsonrpc"
 )
 
 // gcpCmd represents the gcp command.
 // Example:
-//		scriptcli query gcp --height=10
+//
+//	scriptcli query gcp --height=10
 var gcpCmd = &cobra.Command{
 	Use:     "gcp",
 	Short:   "Get guardian candidate pool",

@@ -3,12 +3,12 @@ package mempool
 import (
 	"testing"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	dp "github.com/scripttoken/script/dispatcher"
 	p2psim "github.com/scripttoken/script/p2p/simulation"
 	"github.com/scripttoken/script/rlp"
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMempoolMessageHandler(t *testing.T) {

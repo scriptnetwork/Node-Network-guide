@@ -5,8 +5,8 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
 	cmn "github.com/scripttoken/script/p2pl/common"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -26,13 +26,14 @@ const (
 /*
 Chunk Format:
 
-  bytes[0..3]  : seqID, 32 bits (int32)
-  bytes[4..7]  : payloadSize, 32 bits (int32)
-  bytes[8]     : isEOF, 8 bits
-  bytes[9..15] : reserved
-  bytes[16..payloadSize+15]: the actual payload
+	bytes[0..3]  : seqID, 32 bits (int32)
+	bytes[4..7]  : payloadSize, 32 bits (int32)
+	bytes[8]     : isEOF, 8 bits
+	bytes[9..15] : reserved
+	bytes[16..payloadSize+15]: the actual payload
 
-                      Chunk Bit Map
+	                    Chunk Bit Map
+
 0                   1                   2                   3
 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

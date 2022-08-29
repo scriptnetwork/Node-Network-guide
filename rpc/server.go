@@ -15,8 +15,6 @@ import (
 
 	"github.com/gorilla/mux"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/blockchain"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/common/util"
@@ -25,6 +23,8 @@ import (
 	"github.com/scripttoken/script/ledger"
 	"github.com/scripttoken/script/mempool"
 	"github.com/scripttoken/script/rpc/lib/rpc-codec/jsonrpc2"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"golang.org/x/net/netutil"
 	"golang.org/x/net/websocket"
 )

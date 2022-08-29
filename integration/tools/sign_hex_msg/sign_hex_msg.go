@@ -10,11 +10,9 @@ import (
 	ks "github.com/scripttoken/script/wallet/softwallet/keystore"
 )
 
-//
 // Usage:   sign_hex_msg -signer=<signer_address> -keys_dir=<keys_dir> -msg=<hex_msg_to_be_signed> -encrypted=<true/false>
 //
-// Example: sign_hex_msg -signer=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 -keys_dir=$HOME/.scriptcli/keys -msg=02f8a4c78085e8d4a51000f86ff86d942e833968e5 -encrypted=true
-//
+// Example: sign_hex_msg -signer=2E833968E5bB786Ae419c4d13189fB081Cc43bab -keys_dir=$HOME/.scriptcli/keys -msg=02f8a4c78085e8d4a51000f86ff86d942e833968e5 -encrypted=true
 func main() {
 	signerAddress, keysDir, message, encrypted := parseArguments()
 

@@ -8,12 +8,12 @@ import (
 	"path"
 	"strings"
 
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/blockchain"
 	"github.com/scripttoken/script/core"
 	"github.com/scripttoken/script/snapshot"
 	"github.com/scripttoken/script/store/database/backend"
 	"github.com/scripttoken/script/store/kvstore"
+	"github.com/spf13/viper"
 )
 
 func handleError(err error) {

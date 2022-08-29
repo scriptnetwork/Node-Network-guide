@@ -3,8 +3,8 @@ package mempool
 import (
 	"testing"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/scripttoken/script/common"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/stretchr/testify/assert"
 )

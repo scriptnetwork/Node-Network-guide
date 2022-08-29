@@ -5,9 +5,9 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/scripttoken/script/common"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"github.com/scripttoken/script/common"
 )
 
 func TestHash(t *testing.T) {
@@ -146,7 +146,7 @@ func TestPrivKeyFromBytes(t *testing.T) {
 
 	address = pubKey.Address()
 	t.Logf("Address   : %v", address.Hex())
-	assert.Equal("0x98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5", address.Hex())
+	assert.Equal("0x2E833968E5bB786Ae419c4d13189fB081Cc43bab", address.Hex())
 }
 
 func TestAddressRecovery(t *testing.T) {

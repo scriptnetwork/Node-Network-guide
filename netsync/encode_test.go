@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 package netsync
@@ -7,8 +8,8 @@ import (
 
 	"github.com/scripttoken/script/dispatcher"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMessageEncoding(t *testing.T) {

@@ -496,16 +496,21 @@ func opExtCodeCopy(pc *uint64, interpreter *EVMInterpreter, contract *Contract, 
 // opExtCodeHash returns the code hash of a specified account.
 // There are several cases when the function is called, while we can relay everything
 // to `state.GetCodeHash` function to ensure the correctness.
-//   (1) Caller tries to get the code hash of a normal contract account, state
+//
+//	(1) Caller tries to get the code hash of a normal contract account, state
+//
 // should return the relative code hash and set it as the result.
 //
-//   (2) Caller tries to get the code hash of a non-existent account, state should
+//	(2) Caller tries to get the code hash of a non-existent account, state should
+//
 // return common.Hash{} and zero will be set as the result.
 //
-//   (3) Caller tries to get the code hash for an account without contract code,
+//	(3) Caller tries to get the code hash for an account without contract code,
+//
 // state should return emptyCodeHash(0xc5d246...) as the result.
 //
-//   (4) Caller tries to get the code hash of a precompiled account, the result
+//	(4) Caller tries to get the code hash of a precompiled account, the result
+//
 // should be zero or emptyCodeHash.
 //
 // It is worth noting that in order to avoid unnecessary create and clean,
@@ -514,10 +519,12 @@ func opExtCodeCopy(pc *uint64, interpreter *EVMInterpreter, contract *Contract, 
 // If the precompile account is not transferred any amount on a private or
 // customized chain, the return value will be zero.
 //
-//   (5) Caller tries to get the code hash for an account which is marked as suicided
+//	(5) Caller tries to get the code hash for an account which is marked as suicided
+//
 // in the current transaction, the code hash of this account should be returned.
 //
-//   (6) Caller tries to get the code hash for an account which is marked as deleted,
+//	(6) Caller tries to get the code hash for an account which is marked as deleted,
+//
 // this account should be regarded as a non-existent account and zero should be returned.
 func opExtCodeHash(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
 	slot := stack.peek()
@@ -582,7 +589,13 @@ func opGasLimit(pc *uint64, interpreter *EVMInterpreter, contract *Contract, mem
 
 // opChainID implements CHAINID opcode
 func opChainID(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	chainID := interpreter.evm.chainConfig.ChainID
+	var chainID *big.Int
+	if !SupportWrappedScript(interpreter.evm.StateDB.GetBlockHeight()) {
+		chainID = interpreter.evm.chainConfig.ChainID
+	} else {
+		chainID = big.NewInt(0).Set(interpreter.evm.chainConfig.ChainID)
+	}
+
 	stack.push(chainID)
 	return nil, nil
 }
@@ -697,7 +710,8 @@ func opCreate(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memor
 	gas -= gas / 64
 
 	contract.UseGas(gas)
-	res, addr, returnGas, suberr := interpreter.evm.Create(contract, input, gas, value)
+	scriptValue := big.NewInt(0)
+	res, addr, returnGas, suberr := interpreter.evm.Create(contract, input, gas, value, scriptValue)
 	// Push item on the stack based on the returned error. If the ruleset is
 	// homestead we must check for CodeStoreOutOfGasError (homestead only
 	// rule) and treat as an error, if the ruleset is frontier we must
@@ -730,7 +744,8 @@ func opCreate2(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 	// Apply EIP150
 	gas -= gas / 64
 	contract.UseGas(gas)
-	res, addr, returnGas, suberr := interpreter.evm.Create2(contract, input, gas, endowment, salt)
+	scriptEndowment := big.NewInt(0)
+	res, addr, returnGas, suberr := interpreter.evm.Create2(contract, input, gas, endowment, scriptEndowment, salt)
 	// Push item on the stack based on the returned error.
 	if suberr != nil {
 		stack.push(interpreter.intPool.getZero())
@@ -760,7 +775,8 @@ func opCall(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory 
 	if value.Sign() != 0 {
 		gas += params.CallStipend
 	}
-	ret, returnGas, err := interpreter.evm.Call(contract, toAddr, args, gas, value)
+	scriptValue := big.NewInt(0)
+	ret, returnGas, err := interpreter.evm.Call(contract, toAddr, args, gas, value, scriptValue)
 	if err != nil {
 		stack.push(interpreter.intPool.getZero())
 	} else {
@@ -789,7 +805,7 @@ func opCallCode(pc *uint64, interpreter *EVMInterpreter, contract *Contract, mem
 	if value.Sign() != 0 {
 		gas += params.CallStipend
 	}
-	ret, returnGas, err := interpreter.evm.CallCode(contract, toAddr, args, gas, value)
+	ret, returnGas, err := interpreter.evm.CallCode(contract, toAddr, args, gas, value, new(big.Int)) // scriptValue set to 0: for now, we do not support Script transfer in inter-contract calls
 	if err != nil {
 		stack.push(interpreter.intPool.getZero())
 	} else {

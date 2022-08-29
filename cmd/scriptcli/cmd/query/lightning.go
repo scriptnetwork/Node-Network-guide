@@ -14,12 +14,13 @@ import (
 
 // guardianCmd retreves guardian related information from Script server.
 // Example:
-//		scriptcli query guardian
+//
+//	scriptcli query guardian
 var guardianCmd = &cobra.Command{
 	Use:     "lightning",
 	Short:   "Get lightning info",
 	Long:    `Get lightning status.`,
-	Example: `scriptcli query lightning`,
+	Example: `scriptcli query guardian`,
 	Run:     doGuardianCmd,
 }
 

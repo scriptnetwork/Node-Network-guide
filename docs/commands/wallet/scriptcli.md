@@ -17,7 +17,7 @@ Script wallet.
 
 * [scriptcli backup](scriptcli_backup.md)	 - Manage backups
 * [scriptcli call](scriptcli_call.md)	 - Call smart contract APIs
-* [scriptcli daemon](scriptcli_daemon.md)	 - Run the scriptcli Daemon
+* [scriptcli daemon](scriptcli_daemon.md)	 - Run the ScriptCli Daemon
 * [scriptcli key](scriptcli_key.md)	 - Manage keys
 * [scriptcli query](scriptcli_query.md)	 - Query entities stored in blockchain
 * [scriptcli tx](scriptcli_tx.md)	 - Manage transactions

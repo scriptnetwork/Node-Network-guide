@@ -17,10 +17,10 @@ import (
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/dispatcher"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/blockchain"
 	"github.com/scripttoken/script/p2p/simulation"
 	"github.com/scripttoken/script/p2p/types"
+	"github.com/stretchr/testify/assert"
 )
 
 type MockMessageConsumer struct {

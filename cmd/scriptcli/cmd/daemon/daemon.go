@@ -5,13 +5,14 @@ import (
 	"log"
 	"sync"
 
-	"github.com/spf13/cobra"
 	"github.com/scripttoken/script/cmd/scriptcli/rpc"
+	"github.com/spf13/cobra"
 )
 
 // startDaemonCmd runs the scriptcli daemon
 // Example:
-//		scriptcli daemon start --port=16889
+//
+//	scriptcli daemon start --port=16889
 var startDaemonCmd = &cobra.Command{
 	Use:     "start",
 	Short:   "Run the thatacli daemon",
@@ -19,7 +20,7 @@ var startDaemonCmd = &cobra.Command{
 	Example: `scriptcli daemon start --port=16889`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfgPath := cmd.Flag("config").Value.String()
-		server, err := rpc.NewScriptcliRPCServer(cfgPath, portFlag)
+		server, err := rpc.NewScriptCliRPCServer(cfgPath, portFlag)
 		if err != nil {
 			log.Fatalf("Failed to run the ScriptCli Daemon: %v", err)
 		}
@@ -36,7 +37,7 @@ func init() {
 }
 
 type ScriptCliDaemon struct {
-	RPC *rpc.ScriptcliRPCServer
+	RPC *rpc.ScriptCliRPCServer
 
 	// Life cycle
 	wg      *sync.WaitGroup

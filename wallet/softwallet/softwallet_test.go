@@ -6,8 +6,8 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPlainSoftWalletBasics(t *testing.T) {

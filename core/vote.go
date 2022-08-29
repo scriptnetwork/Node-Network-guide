@@ -7,11 +7,11 @@ import (
 	"io"
 	"sort"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/common/result"
 	"github.com/scripttoken/script/crypto"
 	"github.com/scripttoken/script/rlp"
+	log "github.com/sirupsen/logrus"
 )
 
 // Proposal represents a proposal of a new block.

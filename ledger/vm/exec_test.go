@@ -10,12 +10,12 @@ import (
 	"strconv"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/ledger/state"
 	"github.com/scripttoken/script/ledger/types"
 	"github.com/scripttoken/script/store/database/backend"
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestVMExecute(t *testing.T) {
@@ -105,19 +105,20 @@ func TestVMExecute(t *testing.T) {
 // blockchain and interfact with it
 //
 // pragma solidity ^0.4.18;
-// contract SquareCalculator {
-//     uint public value;
 //
-//     function SetValue(uint val) public {
-//         value = val;
-//     }
+//	contract SquareCalculator {
+//	    uint public value;
 //
-//     function CalculateSquare() constant public returns (uint) {
-//         uint sqr = value * value;
-//         assert(sqr / value == value); // overflow protection
-//         return sqr;
-//     }
-// }
+//	    function SetValue(uint val) public {
+//	        value = val;
+//	    }
+//
+//	    function CalculateSquare() constant public returns (uint) {
+//	        uint sqr = value * value;
+//	        assert(sqr / value == value); // overflow protection
+//	        return sqr;
+//	    }
+//	}
 func TestVMExecutionInteractWithContract(t *testing.T) {
 	assert := assert.New(t)
 

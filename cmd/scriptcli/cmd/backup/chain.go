@@ -19,7 +19,8 @@ var (
 
 // chainCmd represents the chain backup command.
 // Example:
-//		scriptcli backup chain
+//
+//	scriptcli backup chain
 var chainCmd = &cobra.Command{
 	Use:     "chain",
 	Short:   "backup chain",

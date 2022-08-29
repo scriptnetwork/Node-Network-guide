@@ -3,11 +3,11 @@ package treestore
 import (
 	"bytes"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/core"
 	"github.com/scripttoken/script/store/database"
 	"github.com/scripttoken/script/store/trie"
+	log "github.com/sirupsen/logrus"
 )
 
 // NewTreeStore create a new instance of TreeStore.

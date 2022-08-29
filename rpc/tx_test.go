@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/core"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTxCallbackManager(t *testing.T) {

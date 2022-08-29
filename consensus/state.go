@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"sync"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/scripttoken/script/blockchain"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/core"
 	"github.com/scripttoken/script/store"
+	log "github.com/sirupsen/logrus"
 )
 
 type StateStub struct {

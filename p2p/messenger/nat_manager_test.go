@@ -3,10 +3,10 @@ package messenger
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/p2p/netutil"
 	pr "github.com/scripttoken/script/p2p/peer"
 	"github.com/scripttoken/script/rlp"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPeerEportUpdate(t *testing.T) {

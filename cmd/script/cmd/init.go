@@ -4,9 +4,9 @@ import (
 	"os"
 	"path"
 
+	"github.com/scripttoken/script/common"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/scripttoken/script/common"
 )
 
 // initCmd represents the init command

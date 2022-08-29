@@ -1,3 +1,4 @@
+//go:build cluster_deployment
 // +build cluster_deployment
 
 package kvstore
@@ -5,10 +6,10 @@ package kvstore
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/store"
 	"github.com/scripttoken/script/store/database/backend"
+	"github.com/stretchr/testify/assert"
 )
 
 type NodeHeader struct {

@@ -7,7 +7,7 @@
 # After the image is built, you can create a container by:
 #    docker stop script_node
 #    docker rm script_node
-#    docker run -e SCRIPT_CONFIG_PATH=/script/integration/scriptnet/node --name script_node -it script
+#    docker run -e SCRIPT_CONFIG_PATH=/script/integration/privatenet/node --name script_node -it script
 set -e
 
 SCRIPTPATH=$(dirname "$0")

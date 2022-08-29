@@ -33,9 +33,7 @@ const FastsyncSkipTxError = MempoolError("Skip tx during fastsync")
 
 const MaxMempoolTxCount int = 25600
 
-//
 // mempoolTransaction implements the pqueue.Element interface
-//
 type mempoolTransaction struct {
 	index          int
 	rawTransaction common.Bytes
@@ -64,10 +62,8 @@ func createMempoolTransaction(rawTransaction common.Bytes, txInfo *core.TxInfo) 
 	}
 }
 
-//
 // mempoolTransactionGroup holds a sequenece of transactions from one account. We sort transaction groups by the priority of
 // their lowest sequence transaction.
-//
 type mempoolTransactionGroup struct {
 	address common.Address
 	txs     *pqueue.PriorityQueue
@@ -97,8 +93,8 @@ func (mtg *mempoolTransactionGroup) AddTx(rawTx common.Bytes, txInfo *core.TxInf
 }
 
 func (mtg *mempoolTransactionGroup) PopTx() (common.Bytes, *core.TxInfo) {
-	mspay := mtg.txs.Pop().(*mempoolTransaction)
-	return mspay.rawTransaction, mspay.txInfo
+	mptx := mtg.txs.Pop().(*mempoolTransaction)
+	return mptx.rawTransaction, mptx.txInfo
 }
 
 func (mtg *mempoolTransactionGroup) IsEmpty() bool {
@@ -110,11 +106,11 @@ func (mtg *mempoolTransactionGroup) RemoveTxs(committedRawTxMap map[string]bool)
 	elementList := mtg.txs.ElementList()
 	elemsTobeRemoved := []pqueue.Element{}
 	for _, elem := range *elementList {
-		mspay := elem.(*mempoolTransaction)
-		rawTx := mspay.rawTransaction
+		mptx := elem.(*mempoolTransaction)
+		rawTx := mptx.rawTransaction
 		if _, exists := committedRawTxMap[string(rawTx[:])]; exists {
 			elemsTobeRemoved = append(elemsTobeRemoved, elem)
-			logger.Debugf("tx to be removed: %v, txInfo: %v", hex.EncodeToString(rawTx), mspay.txInfo)
+			logger.Debugf("tx to be removed: %v, txInfo: %v", hex.EncodeToString(rawTx), mptx.txInfo)
 		}
 	}
 	for _, elem := range elemsTobeRemoved {
@@ -133,10 +129,8 @@ func createMempoolTransactionGroup(rawTx common.Bytes, txInfo *core.TxInfo) *mem
 	return txGroup
 }
 
-//
 // Mempool manages the transactions submitted by the clients
 // or relayed from peers
-//
 type Mempool struct {
 	mutex *sync.Mutex
 
@@ -221,7 +215,7 @@ func (mp *Mempool) InsertTransaction(rawTx common.Bytes) error {
 		}
 		mp.candidateTxs.Push(txGroup)
 		logger.Debugf("rawTx: %v, txInfo: %v", hex.EncodeToString(rawTx), txInfo)
-		//logger.Infof("Insert tx, tx.hash: 0x%v", getTransactionHash(rawTx))
+		logger.Infof("Insert tx, tx.hash: 0x%v", getTransactionHash(rawTx))
 		mp.size++
 
 		return nil

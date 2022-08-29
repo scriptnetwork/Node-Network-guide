@@ -20,13 +20,14 @@ import (
 
 // sendCmd represents the send command
 // Example:
-//		scriptcli tx send --chain="scriptnet" --from=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1
-//		scriptcli tx send --chain="scriptnet" --path "m/44'/60'/0'/0/0" --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1 --wallet=trezor
-//		scriptcli tx send --chain="scriptnet" --path "m/44'/60'/0'/0" --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1 --wallet=nano
+//
+//	scriptcli tx send --chain="privatenet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1
+//	scriptcli tx send --chain="privatenet" --path "m/44'/60'/0'/0/0" --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1 --wallet=trezor
+//	scriptcli tx send --chain="privatenet" --path "m/44'/60'/0'/0" --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1 --wallet=nano
 var sendCmd = &cobra.Command{
 	Use:     "send",
 	Short:   "Send tokens",
-	Example: `scriptcli tx send --chain="scriptnet" --from=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1`,
+	Example: `scriptcli tx send --chain="privatenet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --to=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --script=10 --spay=9 --seq=1`,
 	Run:     doSendCmd,
 }
 
@@ -46,7 +47,7 @@ func doSendCmd(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	wallet, fromAddress, err := walletUnlockWithPath(cmd, fromFlag, pathFlag)
+	wallet, fromAddress, err := walletUnlockWithPath(cmd, fromFlag, pathFlag, passwordFlag)
 	if err != nil || wallet == nil {
 		return
 	}
@@ -134,10 +135,11 @@ func init() {
 	sendCmd.Flags().StringVar(&pathFlag, "path", "", "Wallet derivation path")
 	sendCmd.Flags().Uint64Var(&seqFlag, "seq", 0, "Sequence number of the transaction")
 	sendCmd.Flags().StringVar(&scriptAmountFlag, "script", "0", "Script amount")
-	sendCmd.Flags().StringVar(&spayAmountFlag, "spay", "0", "Script amount")
-	sendCmd.Flags().StringVar(&feeFlag, "fee", fmt.Sprintf("%dwei", types.MinimumTransactionFeeSPAYWei), "Fee")
+	sendCmd.Flags().StringVar(&spayAmountFlag, "spay", "0", "SPAY amount")
+	sendCmd.Flags().StringVar(&feeFlag, "fee", fmt.Sprintf("%dwei", types.MinimumTransactionFeeSPAYWeiJune2021), "Fee")
 	sendCmd.Flags().StringVar(&walletFlag, "wallet", "soft", "Wallet type (soft|nano|trezor)")
 	sendCmd.Flags().BoolVar(&asyncFlag, "async", false, "block until tx has been included in the blockchain")
+	sendCmd.Flags().StringVar(&passwordFlag, "password", "", "password to unlock the wallet")
 
 	sendCmd.MarkFlagRequired("chain")
 	//sendCmd.MarkFlagRequired("from")

@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"crypto/ecdsa"
 	"encoding/json"
+	"hash"
 	"io"
 	"math/big"
 
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/common/hexutil"
 	"github.com/scripttoken/script/rlp"
+	"golang.org/x/crypto/sha3"
 )
 
 //
@@ -31,9 +33,7 @@ func Keccak256Hash(data ...[]byte) (h common.Hash) {
 // ----------------------- Digital Signature APIs ----------------------- //
 //
 
-//
 // PrivateKey represents the private key
-//
 type PrivateKey struct {
 	privKey *ecdsa.PrivateKey
 }
@@ -71,9 +71,7 @@ func (sk *PrivateKey) Sign(msg common.Bytes) (*Signature, error) {
 	return sig, err
 }
 
-//
 // PublicKey represents the public key
-//
 type PublicKey struct {
 	pubKey *ecdsa.PublicKey
 }
@@ -166,9 +164,7 @@ func (pk *PublicKey) VerifySignature(msg common.Bytes, sig *Signature) bool {
 // 	return isValid
 // }
 
-//
 // Signature represents the digital signature
-//
 type Signature struct {
 	data common.Bytes
 }
@@ -296,4 +292,17 @@ func PublicKeyFromBytes(pkBytes common.Bytes) (*PublicKey, error) {
 func SignatureFromBytes(sigBytes common.Bytes) (*Signature, error) {
 	sig := &Signature{data: sigBytes}
 	return sig, nil
+}
+
+// KeccakState wraps sha3.state. In addition to the usual hash methods, it also supports
+// Read to get a variable amount of data from the hash state. Read is faster than Sum
+// because it doesn't copy the internal state, but also modifies the internal state.
+type KeccakState interface {
+	hash.Hash
+	Read([]byte) (int, error)
+}
+
+// NewKeccakState creates a new KeccakState
+func NewKeccakState() KeccakState {
+	return sha3.NewLegacyKeccak256().(KeccakState)
 }

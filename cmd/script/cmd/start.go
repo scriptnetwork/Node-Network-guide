@@ -12,9 +12,6 @@ import (
 	"strings"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/utils"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/common/util"
@@ -26,7 +23,12 @@ import (
 	"github.com/scripttoken/script/rlp"
 	"github.com/scripttoken/script/snapshot"
 	"github.com/scripttoken/script/store/database/backend"
+	"github.com/scripttoken/script/store/rollingdb"
+	"github.com/scripttoken/script/version"
 	ks "github.com/scripttoken/script/wallet/softwallet/keystore"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // startCmd represents the start command
@@ -61,6 +63,8 @@ func runStart(cmd *cobra.Command, args []string) {
 	db, err := backend.NewLDBDatabase(mainDBPath, refDBPath,
 		viper.GetInt(common.CfgStorageLevelDBCacheSize),
 		viper.GetInt(common.CfgStorageLevelDBHandles))
+
+	rdb := rollingdb.NewRollingDB(dbPath, db)
 
 	if err != nil {
 		log.Fatalf("Failed to connect to the db. main: %v, ref: %v, err: %v",
@@ -138,6 +142,7 @@ func runStart(cmd *cobra.Command, args []string) {
 		NetworkOld:          networkOld,
 		Network:             network,
 		DB:                  db,
+		RollingDB:           rdb,
 		SnapshotPath:        snapshotPath,
 		ChainImportDirPath:  chainImportDirPath,
 		ChainCorrectionPath: chainCorrectionPath,
@@ -314,19 +319,21 @@ func printCountdown() {
 func printWelcomeBanner() {
 	fmt.Println("")
 	fmt.Println("")
-	fmt.Println(" ######################################################### ")
-	fmt.Println("Hello Script")
-	fmt.Println(" ######################################################### ")
+	fmt.Println("#########################################################")
+	fmt.Println("############### Hello Script ############################")
+	fmt.Println("#########################################################")
 	fmt.Println("")
+	fmt.Println("")
+	fmt.Printf("Version %v, GitHash %s\nBuilt at %s\n", version.Version, version.GitHash, version.Timestamp)
 	fmt.Println("")
 }
 
 func printExitBanner() {
 	fmt.Println("")
 	fmt.Println("")
-	fmt.Println(" #################################################### ")
-	fmt.Println("Bye Script")
-	fmt.Println(" #################################################### ")
+	fmt.Println("#########################################################")
+	fmt.Println("################# Bye Script ############################")
+	fmt.Println("#########################################################")
 	fmt.Println("")
 	fmt.Println("")
 }

@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/blockchain"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/consensus"
@@ -24,6 +23,8 @@ import (
 	"github.com/scripttoken/script/store"
 	"github.com/scripttoken/script/store/database"
 	"github.com/scripttoken/script/store/kvstore"
+	"github.com/scripttoken/script/store/rollingdb"
+	"github.com/spf13/viper"
 )
 
 type Node struct {
@@ -53,6 +54,7 @@ type Params struct {
 	NetworkOld          p2p.Network
 	Network             p2pl.Network
 	DB                  database.Database
+	RollingDB           *rollingdb.RollingDB
 	SnapshotPath        string
 	ChainImportDirPath  string
 	ChainCorrectionPath string
@@ -61,6 +63,8 @@ type Params struct {
 func NewNode(params *Params) *Node {
 	store := kvstore.NewKVStore(params.DB)
 	chain := blockchain.NewChain(params.ChainID, store, params.Root)
+	params.RollingDB.SetChain(chain)
+
 	validatorManager := consensus.NewRotatingValidatorManager()
 	dispatcher := dp.NewDispatcher(params.NetworkOld, params.Network)
 	consensus := consensus.NewConsensusEngine(params.PrivateKey, store, chain, dispatcher, validatorManager)
@@ -69,7 +73,7 @@ func NewNode(params *Params) *Node {
 	// TODO: check if this is a guardian node
 	syncMgr := netsync.NewSyncManager(chain, consensus, params.NetworkOld, params.Network, dispatcher, consensus, reporter)
 	mempool := mp.CreateMempool(dispatcher, consensus)
-	ledger := ld.NewLedger(params.ChainID, params.DB, chain, consensus, validatorManager, mempool)
+	ledger := ld.NewLedger(params.ChainID, params.RollingDB, params.RollingDB, chain, consensus, validatorManager, mempool)
 
 	validatorManager.SetConsensusEngine(consensus)
 	consensus.SetLedger(ledger)

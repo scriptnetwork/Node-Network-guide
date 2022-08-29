@@ -134,12 +134,12 @@ func TestValidateInputsAdvanced(t *testing.T) {
 	signBytes := tx.SignBytes(et.chainID)
 
 	//test bad case, unsigned
-	totalCoins, res := validateInputsAdvanced(accMap, signBytes, tx.Inputs)
+	totalCoins, res := validateInputsAdvanced(accMap, signBytes, tx.Inputs, 1)
 	assert.True(res.IsError(), "validateInputsAdvanced: expected an error on an unsigned tx input")
 
 	//test good case sgined
 	et.signSendTx(tx, accIn1, accIn2, accIn3, et.accOut)
-	totalCoins, res = validateInputsAdvanced(accMap, signBytes, tx.Inputs)
+	totalCoins, res = validateInputsAdvanced(accMap, signBytes, tx.Inputs, 1)
 	assert.True(res.IsOK(), "validateInputsAdvanced: expected no error on good tx input. Error: %v", res.Message)
 
 	txTotalCoins := tx.Inputs[0].Coins.
@@ -161,25 +161,25 @@ func TestValidateInputAdvanced(t *testing.T) {
 	signBytes := tx.SignBytes(et.chainID)
 
 	//unsigned case
-	res := validateInputAdvanced(&et.accIn.Account, signBytes, tx.Inputs[0])
+	res := validateInputAdvanced(&et.accIn.Account, signBytes, tx.Inputs[0], 1)
 	assert.True(res.IsError(), "validateInputAdvanced: expected error on tx input without signature")
 
 	//good signed case
 	et.signSendTx(tx, et.accIn, et.accOut)
-	res = validateInputAdvanced(&et.accIn.Account, signBytes, tx.Inputs[0])
+	res = validateInputAdvanced(&et.accIn.Account, signBytes, tx.Inputs[0], 1)
 	assert.True(res.IsOK(), "validateInputAdvanced: expected no error on good tx input. Error: %v", res.Message)
 
 	//bad sequence case
 	et.accIn.Sequence = 1
 	et.signSendTx(tx, et.accIn, et.accOut)
-	res = validateInputAdvanced(&et.accIn.Account, signBytes, tx.Inputs[0])
+	res = validateInputAdvanced(&et.accIn.Account, signBytes, tx.Inputs[0], 1)
 	assert.Equal(result.CodeInvalidSequence, res.Code, "validateInputAdvanced: expected error on tx input with bad sequence")
 	et.accIn.Sequence = 0 //restore sequence
 
 	//bad balance case
 	et.accIn.Balance = types.NewCoins(2, 0)
 	et.signSendTx(tx, et.accIn, et.accOut)
-	res = validateInputAdvanced(&et.accIn.Account, signBytes, tx.Inputs[0])
+	res = validateInputAdvanced(&et.accIn.Account, signBytes, tx.Inputs[0], 1)
 	assert.Equal(result.CodeInsufficientFund, res.Code,
 		"validateInputAdvanced: expected error on tx input with insufficient funds %v", et.accIn.Sequence)
 }
@@ -342,72 +342,11 @@ func TestSendDuplicatedInputOutput(t *testing.T) {
 	assert.Equal(accOutBal0, accOutBal1)
 }
 
-func TestEdgeStakeDuplicatedInputOutput(t *testing.T) {
-	assert := assert.New(t)
-	et := NewExecTest()
-
-	et.acc2State(et.accIn)
-	et.acc2State(et.accOut)
-
-	fee := types.NewCoins(0, getMinimumTxFee())
-	c1 := types.NewCoins(20000, 0)
-	c2 := types.NewCoins(50000, 3000)
-	edgeStakeTx := &types.EdgeStakeTx{
-		Fee: fee,
-		Inputs: []types.TxInput{
-			types.TxInput{
-				Address:  et.accIn.Address,
-				Coins:    c1.Plus(fee),
-				Sequence: et.accIn.Sequence + 1,
-			},
-			types.TxInput{
-				Address:  et.accOut.Address,
-				Coins:    c2,
-				Sequence: et.accOut.Sequence + 1,
-			},
-		},
-		Outputs: []types.TxOutput{
-			types.TxOutput{
-				Address: et.accIn.Address,
-				Coins:   c1,
-			},
-			types.TxOutput{
-				Address: et.accOut.Address,
-				Coins:   c2,
-			},
-		},
-	}
-
-	// Sign transaction
-	signBytes := edgeStakeTx.SignBytes(et.chainID)
-	edgeStakeTx.Inputs[0].Signature = et.accIn.Sign(signBytes)
-	edgeStakeTx.Inputs[1].Signature = et.accOut.Sign(signBytes)
-
-	accInBal0 := et.accIn.Balance
-	accOutBal0 := et.accOut.Balance
-	t.Logf("----- Before executing EdgeStakeTx -----\n")
-	t.Logf("accIn.Balance  = %v\n", accInBal0)
-	t.Logf("accOut.Balance = %v\n", accOutBal0)
-
-	res, _, _, _, _ := et.execEdgeStakeTx(edgeStakeTx, true)
-	assert.False(res.IsOK(), "ExecTx/Good CheckTx: Expected OK return from ExecTx, Error: %v", res)
-	et.executor.state.Commit()
-
-	accInBal1 := et.executor.state.Delivered().GetAccount(et.accIn.Address).Balance
-	accOutBal1 := et.executor.state.Delivered().GetAccount(et.accOut.Address).Balance
-	t.Logf("----- After executing EdgeStakeTx -----\n")
-	t.Logf("accIn.Balance  = %v\n", accInBal1)
-	t.Logf("accOut.Balance = %v\n", accOutBal1)
-
-	assert.Equal(accInBal0, accInBal1)
-	assert.Equal(accOutBal0, accOutBal1)
-}
-
-// func TestCalculatePandoReward(t *testing.T) {
+// func TestCalculateScriptReward(t *testing.T) {
 // 	assert := assert.New(t)
 
-// 	res := calculatePandoReward(big.NewInt(1e17), true)
-// 	assert.True(res.SCPTWei.Cmp(types.Zero) == 0) // ZERO Pando inflation
+// 	res := calculateScriptReward(big.NewInt(1e17), true)
+// 	assert.True(res.SCPTWei.Cmp(types.Zero) == 0) // ZERO Script inflation
 // }
 
 // func TestCoinbaseTx(t *testing.T) {
@@ -447,7 +386,7 @@ func TestEdgeStakeDuplicatedInputOutput(t *testing.T) {
 // 	res = et.executor.getTxExecutor(tx).sanityCheck(et.chainID, et.state().Delivered(), tx)
 // 	assert.True(res.IsOK(), res.String())
 
-// 	// Pando should never inflate
+// 	// Script should never inflate
 // 	tx = &types.CoinbaseTx{
 // 		Proposer: types.TxInput{
 // 			Address: va1.Address},
@@ -475,7 +414,7 @@ func TestEdgeStakeDuplicatedInputOutput(t *testing.T) {
 // 	res = et.executor.getTxExecutor(tx).sanityCheck(et.chainID, et.state().Delivered(), tx)
 // 	assert.True(res.IsError(), res.String())
 
-// 	// //Error if reward Pando amount is incorrect
+// 	// //Error if reward Script amount is incorrect
 // 	// tx = &types.CoinbaseTx{
 // 	// 	Proposer: types.TxInput{
 // 	// 		Address: va1.PubKey.Address(), PubKey: va1.PubKey},
@@ -719,7 +658,7 @@ func TestReleaseFundTx(t *testing.T) {
 	assert.Equal(res.Code, result.CodeInvalidFee, res.String())
 
 	releaseFundTx = &types.ReleaseFundTx{
-		Fee: types.NewCoins(100, getMinimumTxFee()), // Pando cannot be used as transaction fee
+		Fee: types.NewCoins(100, getMinimumTxFee()), // Script cannot be used as transaction fee
 		Source: types.TxInput{
 			Address:  user1.Address,
 			Sequence: 2,

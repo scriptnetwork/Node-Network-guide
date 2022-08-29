@@ -3,12 +3,12 @@ package consensus
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/blockchain"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/core"
 	"github.com/scripttoken/script/store/database/backend"
 	"github.com/scripttoken/script/store/kvstore"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConsensusStateBasic(t *testing.T) {

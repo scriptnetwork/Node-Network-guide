@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/utils"
+	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/rpc"
 
 	"github.com/spf13/cobra"
@@ -14,12 +15,13 @@ import (
 
 // accountCmd represents the account command.
 // Example:
-//		scriptcli query account --address=0x98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5
+//
+//	scriptcli query account --address=0x2E833968E5bB786Ae419c4d13189fB081Cc43bab
 var accountCmd = &cobra.Command{
 	Use:     "account",
 	Short:   "Get account status",
 	Long:    `Get account status.`,
-	Example: `scriptcli query account --address=0x98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5`,
+	Example: `scriptcli query account --address=0x2E833968E5bB786Ae419c4d13189fB081Cc43bab`,
 	Run:     doAccountCmd,
 }
 
@@ -27,7 +29,9 @@ func doAccountCmd(cmd *cobra.Command, args []string) {
 	client := rpcc.NewRPCClient(viper.GetString(utils.CfgRemoteRPCEndpoint))
 
 	res, err := client.Call("script.GetAccount", rpc.GetAccountArgs{
-		Address: addressFlag, Preview: previewFlag})
+		Address: addressFlag,
+		Height:  common.JSONUint64(heightFlag),
+		Preview: previewFlag})
 	if err != nil {
 		utils.Error("Failed to get account details: %v\n", err)
 	}
@@ -43,6 +47,7 @@ func doAccountCmd(cmd *cobra.Command, args []string) {
 
 func init() {
 	accountCmd.Flags().StringVar(&addressFlag, "address", "", "Address of the account")
+	accountCmd.Flags().Uint64Var(&heightFlag, "height", uint64(0), "height of the block")
 	accountCmd.Flags().BoolVar(&previewFlag, "preview", false, "Preview account balance from the screened view")
 	accountCmd.MarkFlagRequired("address")
 }

@@ -14,8 +14,8 @@ import (
 
 // txCmd represents the query tx command.
 // Example:
-//		scriptcli query tx --hash=0x2fe41732b40ca852e9c36f52b278dde78f0fe34f28f9c94083112aa6a0624b8c
 //
+//	scriptcli query tx --hash=0x2fe41732b40ca852e9c36f52b278dde78f0fe34f28f9c94083112aa6a0624b8c
 var txCmd = &cobra.Command{
 	Use:     "tx",
 	Short:   "Get transaction details",

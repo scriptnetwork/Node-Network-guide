@@ -4,17 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/utils"
 	"github.com/scripttoken/script/rpc"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	rpcc "github.com/ybbus/jsonrpc"
 )
 
 // splitRuleCmd represents the split_rule command.
 // Example:
-//		scriptcli query split_rule --resource_id=vid2dz369du0mkwcrb9
+//
+//	scriptcli query split_rule --resource_id=vid2dz369du0mkwcrb9
 var splitRuleCmd = &cobra.Command{
 	Use:     "split_rule",
 	Short:   "Get split rule status",

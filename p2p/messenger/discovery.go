@@ -7,17 +7,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/common"
 	cn "github.com/scripttoken/script/p2p/connection"
 	"github.com/scripttoken/script/p2p/netutil"
 	pr "github.com/scripttoken/script/p2p/peer"
 	p2ptypes "github.com/scripttoken/script/p2p/types"
+	"github.com/spf13/viper"
 )
 
-//
 // PeerDiscoveryManager manages the peer discovery process
-//
 type PeerDiscoveryManager struct {
 	messenger *Messenger
 
@@ -42,9 +40,7 @@ type PeerDiscoveryManager struct {
 	stopped bool
 }
 
-//
 // PeerDiscoveryManagerConfig specifies the configuration for PeerDiscoveryManager
-//
 type PeerDiscoveryManagerConfig struct {
 	MaxNumPeers        int
 	SufficientNumPeers uint
@@ -88,7 +84,7 @@ func CreatePeerDiscoveryManager(msgr *Messenger, nodeInfo *p2ptypes.NodeInfo, ad
 		if err == nil {
 			logger.Infof("Inbound peer connected, ID: %v, from: %v", peer.ID(), peer.GetConnection().GetNetconn().RemoteAddr())
 		} else {
-			logger.Errorf("Inbound peer listener error: %v", err)
+			logger.Warnf("Inbound peer listener error: %v", err)
 		}
 	})
 
@@ -157,7 +153,7 @@ func (discMgr *PeerDiscoveryManager) HandlePeerWithErrors(peer *pr.Peer) {
 	peerRemoteAddress := peer.GetConnection().GetNetconn().RemoteAddr().String()
 	lookedUpPeer := discMgr.peerTable.GetPeer(peer.ID())
 	if lookedUpPeer == nil {
-		logger.Errorf("HandlePeerWithErrors cannot find the peer: %v", peer.ID())
+		logger.Warnf("HandlePeerWithErrors cannot find the peer: %v", peer.ID())
 		return // Should not happen
 	}
 	lookedUpPeerRemoteAddress := lookedUpPeer.GetConnection().GetNetconn().RemoteAddr().String()
@@ -221,7 +217,7 @@ func (discMgr *PeerDiscoveryManager) connectWithInboundPeer(netconn net.Conn, pe
 	connConfig := cn.GetDefaultConnectionConfig()
 	peer, err := pr.CreateInboundPeer(netconn, peerConfig, connConfig)
 	if err != nil {
-		logger.Errorf("Failed to create inbound peer: %v", netconn.RemoteAddr())
+		logger.Warnf("Failed to create inbound peer: %v", netconn.RemoteAddr())
 		return nil, err
 	}
 	peer.SetPersistency(persistent)
@@ -233,7 +229,7 @@ func (discMgr *PeerDiscoveryManager) connectWithInboundPeer(netconn net.Conn, pe
 // it save the peer to the peer table
 func (discMgr *PeerDiscoveryManager) handshakeAndAddPeer(peer *pr.Peer) error {
 	if err := peer.Handshake(discMgr.nodeInfo); err != nil {
-		logger.Errorf("Failed to handshake with peer, error: %v", err)
+		logger.Warnf("Failed to handshake with peer, error: %v", err)
 		return err
 	}
 
@@ -251,13 +247,13 @@ func (discMgr *PeerDiscoveryManager) handshakeAndAddPeer(peer *pr.Peer) error {
 
 	if !peer.Start(discMgr.ctx) {
 		errMsg := "Failed to start peer"
-		logger.Errorf(errMsg)
+		logger.Warnf(errMsg)
 		return errors.New(errMsg)
 	}
 
 	if !discMgr.peerTable.AddPeer(peer) {
 		errMsg := "Failed to add peer to the peerTable"
-		logger.Errorf(errMsg)
+		logger.Warnf(errMsg)
 		return errors.New(errMsg)
 	}
 

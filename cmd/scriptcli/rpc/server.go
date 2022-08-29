@@ -11,20 +11,20 @@ import (
 
 	"github.com/gorilla/mux"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/common/util"
 	"github.com/scripttoken/script/rpc/lib/rpc-codec/jsonrpc2"
 	wl "github.com/scripttoken/script/wallet"
 	wt "github.com/scripttoken/script/wallet/types"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"golang.org/x/net/netutil"
 	"golang.org/x/net/websocket"
 )
 
 var logger *log.Entry
 
-type scriptcliRPCService struct {
+type ScriptCliRPCService struct {
 	wallet wt.Wallet
 
 	// Life cycle
@@ -34,9 +34,9 @@ type scriptcliRPCService struct {
 	stopped bool
 }
 
-// scriptcliRPCServer is an instance of the CLI RPC service.
-type ScriptcliRPCServer struct {
-	*scriptcliRPCService
+// ScriptCliRPCServer is an instance of the CLI RPC service.
+type ScriptCliRPCServer struct {
+	*ScriptCliRPCService
 	port string
 
 	server   *http.Server
@@ -45,16 +45,16 @@ type ScriptcliRPCServer struct {
 	listener net.Listener
 }
 
-// NewscriptcliRPCServer creates a new instance of ScriptRPCServer.
-func NewScriptcliRPCServer(cfgPath, port string) (*ScriptcliRPCServer, error) {
+// NewScriptCliRPCServer creates a new instance of ScriptRPCServer.
+func NewScriptCliRPCServer(cfgPath, port string) (*ScriptCliRPCServer, error) {
 	wallet, err := wl.OpenWallet(cfgPath, wt.WalletTypeSoft, true)
 	if err != nil {
 		fmt.Printf("Failed to open wallet: %v\n", err)
 		return nil, err
 	}
 
-	t := &ScriptcliRPCServer{
-		scriptcliRPCService: &scriptcliRPCService{
+	t := &ScriptCliRPCServer{
+		ScriptCliRPCService: &ScriptCliRPCService{
 			wallet: wallet,
 			wg:     &sync.WaitGroup{},
 		},
@@ -62,7 +62,7 @@ func NewScriptcliRPCServer(cfgPath, port string) (*ScriptcliRPCServer, error) {
 	}
 
 	s := rpc.NewServer()
-	s.RegisterName("scriptcli", t.scriptcliRPCService)
+	s.RegisterName("scriptcli", t.ScriptCliRPCService)
 
 	t.handler = s
 
@@ -82,7 +82,7 @@ func NewScriptcliRPCServer(cfgPath, port string) (*ScriptcliRPCServer, error) {
 }
 
 // Start creates the main goroutine.
-func (t *ScriptcliRPCServer) Start(ctx context.Context) {
+func (t *ScriptCliRPCServer) Start(ctx context.Context) {
 	c, cancel := context.WithCancel(ctx)
 	t.ctx = c
 	t.cancel = cancel
@@ -91,7 +91,7 @@ func (t *ScriptcliRPCServer) Start(ctx context.Context) {
 	go t.mainLoop()
 }
 
-func (t *ScriptcliRPCServer) mainLoop() {
+func (t *ScriptCliRPCServer) mainLoop() {
 	defer t.wg.Done()
 
 	go t.serve()
@@ -101,7 +101,7 @@ func (t *ScriptcliRPCServer) mainLoop() {
 	t.server.Shutdown(t.ctx)
 }
 
-func (t *ScriptcliRPCServer) serve() {
+func (t *ScriptCliRPCServer) serve() {
 	l, err := net.Listen("tcp", ":"+t.port)
 	if err != nil {
 		logger.WithFields(log.Fields{"error": err}).Fatal("Failed to create listener")
@@ -117,11 +117,11 @@ func (t *ScriptcliRPCServer) serve() {
 }
 
 // Stop notifies all goroutines to stop without blocking.
-func (t *ScriptcliRPCServer) Stop() {
+func (t *ScriptCliRPCServer) Stop() {
 	t.cancel()
 }
 
 // Wait blocks until all goroutines stop.
-func (t *ScriptcliRPCServer) Wait() {
+func (t *ScriptCliRPCServer) Wait() {
 	t.wg.Wait()
 }

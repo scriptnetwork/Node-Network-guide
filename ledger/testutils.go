@@ -59,11 +59,9 @@ func newExecSim(chainID string, db database.Database, snapshot mockSnapshot, val
 
 	mempool := mp.CreateMempool(dispatcher, consensus)
 
-	ledgerState := st.NewLedgerState(chainID, db)
+	ledgerState := st.NewLedgerState(chainID, db, nil)
 	//ledgerState.ResetState(initHeight, snapshot.block.StateHash)
 	ledgerState.ResetState(snapshot.block)
-
-	executor := exec.NewExecutor(db, chain, ledgerState, consensus, valMgr)
 
 	ledger := &Ledger{
 		consensus: consensus,
@@ -71,8 +69,10 @@ func newExecSim(chainID string, db database.Database, snapshot mockSnapshot, val
 		mempool:   mempool,
 		mu:        &sync.RWMutex{},
 		state:     ledgerState,
-		executor:  executor,
 	}
+	executor := exec.NewExecutor(db, chain, ledgerState, consensus, valMgr, ledger)
+	ledger.SetExecutor(executor)
+
 	consensus.SetLedger(ledger)
 
 	es := &execSim{
@@ -149,10 +149,10 @@ func genSimSnapshot(chainID string, db database.Database) (snapshot mockSnapshot
 	stakeAmount4 := new(big.Int).Mul(new(big.Int).SetUint64(4), core.MinValidatorStakeDeposit)
 
 	vcp := &core.ValidatorCandidatePool{}
-	vcp.DepositStake(src1Acc.Address, val1Acc.Address, stakeAmount1)
-	vcp.DepositStake(src2Acc.Address, val2Acc.Address, stakeAmount2)
-	vcp.DepositStake(src3Acc.Address, val3Acc.Address, stakeAmount3)
-	vcp.DepositStake(src4Acc.Address, val4Acc.Address, stakeAmount4)
+	vcp.DepositStake(src1Acc.Address, val1Acc.Address, stakeAmount1, 0)
+	vcp.DepositStake(src2Acc.Address, val2Acc.Address, stakeAmount2, 0)
+	vcp.DepositStake(src3Acc.Address, val3Acc.Address, stakeAmount3, 0)
+	vcp.DepositStake(src4Acc.Address, val4Acc.Address, stakeAmount4, 0)
 
 	sv := state.NewStoreView(initHeight, common.Hash{}, db)
 	sv.UpdateValidatorCandidatePool(vcp)
@@ -199,7 +199,7 @@ func newTestLedger() (chainID string, ledger *Ledger, mempool *mp.Mempool) {
 	p2psimnet := p2psim.NewSimnetWithHandler(nil)
 	messenger := p2psimnet.AddEndpoint(peerID)
 	mempool = newTestMempool(peerID, messenger, nil)
-	ledger = NewLedger(chainID, db, chain, consensus, valMgr, mempool)
+	ledger = NewLedger(chainID, db, nil, chain, consensus, valMgr, mempool)
 	mempool.SetLedger(ledger)
 
 	ctx := context.Background()
@@ -320,7 +320,7 @@ func newRawSendTx(chainID string, sequence int, addPubKey bool, accOut, accIn ty
 		if randint < 0 {
 			randint = -randint
 		}
-		delta = randint * int64(types.GasSendTxPerAccount*2)
+		delta = randint * int64(types.GasRegularTxJune2021)
 		if err != nil {
 			panic(err)
 		}
@@ -361,58 +361,6 @@ func newRawSendTx(chainID string, sequence int, addPubKey bool, accOut, accIn ty
 	return sendTxBytes
 }
 
-func newRawEdgeStakeTx(chainID string, sequence int, addPubKey bool, accOut, accIn types.PrivAccount, injectFeeFluctuation bool) common.Bytes {
-	delta := int64(0)
-	var err error
-	if injectFeeFluctuation {
-		// inject so fluctuation into the txFee, so later we can test whether the
-		// mempool orders the txs by txFee
-		randint, err := strconv.ParseInt(string(accIn.Address.Hex()[2:9]), 16, 64)
-		if randint < 0 {
-			randint = -randint
-		}
-		delta = randint * int64(types.GasSendTxPerAccount*2)
-		if err != nil {
-			panic(err)
-		}
-	}
-	txFee := getMinimumTxFee() + delta
-	edgeStakeTx := &types.EdgeStakeTx{
-		Fee: types.NewCoins(0, txFee),
-		Inputs: []types.TxInput{
-			{
-				Sequence: uint64(sequence),
-				Address:  accIn.Address,
-				Coins:    types.NewCoins(15, txFee),
-			},
-		},
-		Outputs: []types.TxOutput{
-			{
-				Address: accOut.Address,
-				Coins:   types.NewCoins(15, 0),
-			},
-		},
-	}
-
-	signBytes := edgeStakeTx.SignBytes(chainID)
-	inAccs := []types.PrivAccount{accIn}
-	for idx, in := range edgeStakeTx.Inputs {
-		inAcc := inAccs[idx]
-		sig, err := inAcc.PrivKey.Sign(signBytes)
-		if err != nil {
-			panic("Failed to sign the coinbase transaction")
-		}
-		edgeStakeTx.SetSignature(in.Address, sig)
-	}
-
-	sendTxBytes, err := types.TxToBytes(edgeStakeTx)
-	if err != nil {
-		panic(err)
-	}
-	return sendTxBytes
-}
-
 func getMinimumTxFee() int64 {
 	return int64(types.MinimumTransactionFeeSPAYWei)
 }
-

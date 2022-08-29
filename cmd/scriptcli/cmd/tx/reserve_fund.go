@@ -16,16 +16,17 @@ import (
 
 // reserveFundCmd represents the reserve fund command
 // Example:
-//		scriptcli tx reserve --chain="scriptnet" --from=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --fund=900 --collateral=1203 --seq=6 --duration=1002 --resource_ids=die_another_day,hello
+//
+//	scriptcli tx reserve --chain="privatenet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --fund=900 --collateral=1203 --seq=6 --duration=1002 --resource_ids=die_another_day,hello
 var reserveFundCmd = &cobra.Command{
 	Use:     "reserve",
 	Short:   "Reserve fund for an off-chain micropayment",
-	Example: `scriptcli tx reserve --chain="scriptnet" --from=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --fund=900 --collateral=1203 --seq=6 --duration=1002 --resource_ids=die_another_day,hello`,
+	Example: `scriptcli tx reserve --chain="privatenet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --fund=900 --collateral=1203 --seq=6 --duration=1002 --resource_ids=die_another_day,hello`,
 	Run:     doReserveFundCmd,
 }
 
 func doReserveFundCmd(cmd *cobra.Command, args []string) {
-	wallet, fromAddress, err := walletUnlock(cmd, fromFlag)
+	wallet, fromAddress, err := walletUnlock(cmd, fromFlag, passwordFlag)
 	if err != nil {
 		return
 	}
@@ -88,7 +89,12 @@ func doReserveFundCmd(cmd *cobra.Command, args []string) {
 
 	client := rpcc.NewRPCClient(viper.GetString(utils.CfgRemoteRPCEndpoint))
 
-	res, err := client.Call("script.BroadcastRawTransaction", rpc.BroadcastRawTransactionArgs{TxBytes: signedTx})
+	var res *rpcc.RPCResponse
+	if asyncFlag {
+		res, err = client.Call("script.BroadcastRawTransactionAsync", rpc.BroadcastRawTransactionArgs{TxBytes: signedTx})
+	} else {
+		res, err = client.Call("script.BroadcastRawTransaction", rpc.BroadcastRawTransactionArgs{TxBytes: signedTx})
+	}
 	if err != nil {
 		utils.Error("Failed to broadcast transaction: %v\n", err)
 	}
@@ -104,10 +110,12 @@ func init() {
 	reserveFundCmd.Flags().Uint64Var(&seqFlag, "seq", 0, "Sequence number of the transaction")
 	reserveFundCmd.Flags().StringVar(&reserveFundInSPAYFlag, "fund", "0", "SPAY amount to reserve")
 	reserveFundCmd.Flags().StringVar(&reserveCollateralInSPAYFlag, "collateral", "0", "SPAY amount as collateral")
-	reserveFundCmd.Flags().StringVar(&feeFlag, "fee", fmt.Sprintf("%dwei", types.MinimumTransactionFeeSPAYWei), "Fee")
+	reserveFundCmd.Flags().StringVar(&feeFlag, "fee", fmt.Sprintf("%dwei", types.MinimumTransactionFeeSPAYWeiJune2021), "Fee")
 	reserveFundCmd.Flags().Uint64Var(&durationFlag, "duration", 1000, "Reserve duration")
 	reserveFundCmd.Flags().StringSliceVar(&resourceIDsFlag, "resource_ids", []string{}, "Reserouce IDs")
 	reserveFundCmd.Flags().StringVar(&walletFlag, "wallet", "soft", "Wallet type (soft|nano)")
+	reserveFundCmd.Flags().BoolVar(&asyncFlag, "async", false, "block until tx has been included in the blockchain")
+	reserveFundCmd.Flags().StringVar(&passwordFlag, "password", "", "password to unlock the wallet")
 
 	reserveFundCmd.MarkFlagRequired("chain")
 	reserveFundCmd.MarkFlagRequired("from")

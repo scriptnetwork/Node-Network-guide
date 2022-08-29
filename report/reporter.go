@@ -14,7 +14,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/blockchain"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/common/util"
@@ -22,6 +21,7 @@ import (
 	"github.com/scripttoken/script/core"
 	dp "github.com/scripttoken/script/dispatcher"
 	"github.com/scripttoken/script/version"
+	"github.com/spf13/viper"
 )
 
 var logger *log.Entry = log.WithFields(log.Fields{"prefix": "reporter"})
@@ -30,7 +30,7 @@ var setPeersSuffix string = "/peers/set"
 var peerUrl string
 var rpcJSON = []byte(`{"jsonrpc": "2.0", "method": "script.GetStatus", "params": [{}], "id": 0}`)
 
-const sleepTime time.Duration = time.Second * 60
+const sleepTime time.Duration = time.Second * 60 * 10
 
 type Reporter struct {
 	init   bool
@@ -55,7 +55,7 @@ func NewReporter(disp *dp.Dispatcher, consensus *consensus.ConsensusEngine, chai
 	peerUrl = "http://" + viper.GetString(common.CfgMetricsServer) + reportPeersPort + setPeersSuffix
 	ipAddr, err := util.GetPublicIP()
 	if err != nil {
-		logger.Errorf("Reporter failed to retrieve the node's IP address: %v", err)
+		logger.Warnf("Reporter failed to retrieve the node's IP address: %v", err)
 	}
 	var ok bool = true
 	if mserver := viper.GetString(common.CfgMetricsServer); mserver != "" {
@@ -97,7 +97,7 @@ func (rp *Reporter) Wait() {
 	rp.wg.Wait()
 }
 
-//report online & sync
+// report online & sync
 func (rp *Reporter) reportOnlineAndSync() {
 	for {
 		select {
@@ -128,14 +128,14 @@ func (rp *Reporter) handlePeers() {
 	data := []byte(jsonStr)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
 	if err != nil {
-		logger.Errorf("Reporter failed to create request: %v", err)
+		logger.Warnf("Reporter failed to create request: %v", err)
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Errorf("Reporter failed to create request: %v", err)
+		logger.Warnf("Reporter failed to create request: %v", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -146,7 +146,7 @@ func (rp *Reporter) handlePeers() {
 }
 
 func (rp *Reporter) peersToString() string {
-	p := rp.disp.Peers()
+	p := rp.disp.Peers(true) // skip edge nodes
 	var sb strings.Builder
 	for i, peer := range p {
 		if i > 0 {

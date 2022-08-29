@@ -19,7 +19,8 @@ var (
 
 // chainCorrectionCmd represents the chain correction command.
 // Example:
-//		scriptcli backup chain_correction
+//
+//	scriptcli backup chain_correction
 var chainCorrectionCmd = &cobra.Command{
 	Use:     "chain_correction",
 	Short:   "backup chain_correction",

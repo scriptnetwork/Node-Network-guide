@@ -5,13 +5,16 @@ import (
 )
 
 var (
-	heightFlag     uint64
-	addressFlag    string
-	previewFlag    bool
-	resourceIDFlag string
-	hashFlag       string
-	startFlag      uint64
-	endFlag        uint64
+	purposeFlag          uint8
+	heightFlag           uint64
+	addressFlag          string
+	previewFlag          bool
+	resourceIDFlag       string
+	hashFlag             string
+	startFlag            uint64
+	endFlag              uint64
+	skipEdgeNodeFlag     bool
+	includeEthTxHashFlag bool
 )
 
 // QueryCmd represents the query command
@@ -29,6 +32,9 @@ func init() {
 	QueryCmd.AddCommand(splitRuleCmd)
 	QueryCmd.AddCommand(vcpCmd)
 	QueryCmd.AddCommand(gcpCmd)
+	QueryCmd.AddCommand(eenpCmd)
+	QueryCmd.AddCommand(srdrsCmd)
+	QueryCmd.AddCommand(stakeReturnsCmd)
 	QueryCmd.AddCommand(peersCmd)
 	QueryCmd.AddCommand(versionCmd)
 }

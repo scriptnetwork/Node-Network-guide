@@ -16,9 +16,7 @@ const (
 	highConnectivityCheckInterval = 6
 )
 
-//
 // SeedPeerConnector proactively connects to seed peers
-//
 type SeedPeerConnector struct {
 	discMgr *PeerDiscoveryManager
 
@@ -160,7 +158,7 @@ func (spc *SeedPeerConnector) maintainConnectivityRoutine() {
 }
 
 func (spc *SeedPeerConnector) maintainConnectivity() {
-	allPeers := *(spc.discMgr.peerTable.GetAllPeers())
+	allPeers := *(spc.discMgr.peerTable.GetAllPeers(true)) // not to count edge node peers
 	if !spc.discMgr.seedPeerOnly {
 		for _, pr := range allPeers {
 			if pr.IsSeed() {

@@ -8,8 +8,8 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/p2p/netutil"
+	"github.com/stretchr/testify/assert"
 )
 
 func createTempFileName(prefix string) string {

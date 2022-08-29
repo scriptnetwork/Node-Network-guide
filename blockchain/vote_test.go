@@ -3,9 +3,9 @@ package blockchain
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/core"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestVoteIndex(t *testing.T) {

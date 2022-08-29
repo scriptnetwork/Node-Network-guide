@@ -7,8 +7,6 @@ import (
 	"sync"
 
 	lru "github.com/hashicorp/golang-lru"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/blockchain"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/common/util"
@@ -19,6 +17,8 @@ import (
 	"github.com/scripttoken/script/p2pl"
 	rp "github.com/scripttoken/script/report"
 	"github.com/scripttoken/script/rlp"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 const voteCacheLimit = 512
@@ -138,6 +138,8 @@ func (sm *SyncManager) GetChannelIDs() []common.ChannelIDEnum {
 		common.ChannelIDCC,
 		common.ChannelIDVote,
 		common.ChannelIDGuardian,
+		common.ChannelIDEliteEdgeNodeVote,
+		common.ChannelIDAggregatedEliteEdgeNodeVotes,
 	}
 }
 
@@ -622,6 +624,41 @@ func (m *SyncManager) handleDataResponse(peerID string, data *dispatcher.DataRes
 			"peer":            peerID,
 		}).Debug("Received guardian vote")
 		m.handleGuardianVote(vote)
+	case common.ChannelIDEliteEdgeNodeVote:
+		vote := &core.EENVote{}
+		err := rlp.DecodeBytes(data.Payload, vote)
+		if err != nil {
+			m.logger.WithFields(log.Fields{
+				"channelID": data.ChannelID,
+				"payload":   data.Payload,
+				"error":     err,
+				"peerID":    peerID,
+			}).Warn("Failed to decode DataResponse payload")
+			return
+		}
+		// m.logger.WithFields(log.Fields{
+		// 	"vote.Block": vote.Block.Hex(),
+		// 	"peer":       peerID,
+		// }).Debug("Received elite edge node vote")
+		m.handleEliteEdgeNodeVote(vote)
+	case common.ChannelIDAggregatedEliteEdgeNodeVotes:
+		vote := &core.AggregatedEENVotes{}
+		err := rlp.DecodeBytes(data.Payload, vote)
+		if err != nil {
+			m.logger.WithFields(log.Fields{
+				"channelID": data.ChannelID,
+				"payload":   data.Payload,
+				"error":     err,
+				"peerID":    peerID,
+			}).Warn("Failed to decode DataResponse payload")
+			return
+		}
+		m.logger.WithFields(log.Fields{
+			"vote.Block":      vote.Block.Hex(),
+			"vote.Multiplies": vote.Multiplies,
+			"peer":            peerID,
+		}).Debug("Received aggregated elite edge node vote")
+		m.handleAggregatedEliteEdgeNodeVotes(vote)
 	case common.ChannelIDHeader:
 		headers := &Headers{}
 		err := rlp.DecodeBytes(data.Payload, headers)
@@ -631,7 +668,7 @@ func (m *SyncManager) handleDataResponse(peerID string, data *dispatcher.DataRes
 				"payload":   data.Payload,
 				"error":     err,
 				"peerID":    peerID,
-			}).Warn("Failed to decode HeaderResponse payload")
+			}).Debug("Failed to decode HeaderResponse payload")
 			return
 		}
 		for _, header := range headers.HeaderArray {
@@ -778,5 +815,13 @@ func (sm *SyncManager) handleVote(vote core.Vote) {
 }
 
 func (sm *SyncManager) handleGuardianVote(vote *core.AggregatedVotes) {
+	sm.PassdownMessage(vote)
+}
+
+func (sm *SyncManager) handleEliteEdgeNodeVote(vote *core.EENVote) {
+	sm.PassdownMessage(vote)
+}
+
+func (sm *SyncManager) handleAggregatedEliteEdgeNodeVotes(vote *core.AggregatedEENVotes) {
 	sm.PassdownMessage(vote)
 }

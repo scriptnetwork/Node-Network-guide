@@ -3,11 +3,11 @@ package blockchain
 import (
 	"fmt"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/core"
 	"github.com/scripttoken/script/store/database/backend"
 	"github.com/scripttoken/script/store/kvstore"
+	"github.com/stretchr/testify/assert"
 )
 
 // CreateTestChain creates a chain for testing.
@@ -19,7 +19,8 @@ func CreateTestChain() *Chain {
 }
 
 // CreateTestChainByBlocks creates a chain with given string slice in format:
-//   [block1_hash, block1_parent_hash, block2_hash, block1_parent_hash, ...]
+//
+//	[block1_hash, block1_parent_hash, block2_hash, block1_parent_hash, ...]
 func CreateTestChainByBlocks(pairs []string) *Chain {
 	chain := CreateTestChain()
 	for i := 0; i < len(pairs); i += 2 {

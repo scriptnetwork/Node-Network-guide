@@ -35,11 +35,9 @@ type StakeDeposit struct {
 	Amount string `json:"amount"`
 }
 
-//
 // Example:
-// pushd $SCRIPT_HOME/integration/scriptnet/node
-// generate_genesis -chainID=scriptnet -erc20snapshot=./data/genesis_script_erc20_snapshot.json -stake_deposit=./data/genesis_stake_deposit.json -genesis=./genesis
-//
+// pushd $SCRIPT_HOME/integration/privatenet/node
+// generate_genesis -chainID=privatenet -erc20snapshot=./data/genesis_script_erc20_snapshot.json -stake_deposit=./data/genesis_stake_deposit.json -genesis=./genesis
 func main() {
 	chainID, erc20SnapshotJSONFilePath, stakeDepositFilePath, genesisSnapshotFilePath := parseArguments()
 
@@ -188,7 +186,7 @@ func performInitialStakeDeposit(stakeDepositFilePath string, genesisHeight uint6
 			panic(fmt.Sprintf("The source account %v does NOT have sufficient balance for stake deposit. SCPTWeiBalance = %v, StakeAmount = %v",
 				sourceAddress, sourceAccount.Balance.SCPTWei, stakeDeposit.Amount))
 		}
-		err := vcp.DepositStake(sourceAddress, holderAddress, stakeAmount)
+		err := vcp.DepositStake(sourceAddress, holderAddress, stakeAmount, genesisHeight)
 		if err != nil {
 			panic(fmt.Sprintf("Failed to deposit stake, err: %v", err))
 		}
@@ -254,8 +252,8 @@ func writeStoreView(sv *state.StoreView, needAccountStorage bool, writer *bufio.
 }
 
 func sanityChecks(sv *state.StoreView) error {
-	SCPTWeiTotal := new(big.Int).SetUint64(0)
-	SPAYWeiTotal := new(big.Int).SetUint64(0)
+	scptWeiTotal := new(big.Int).SetUint64(0)
+	spayWeiTotal := new(big.Int).SetUint64(0)
 
 	vcpAnalyzed := false
 	sv.GetStore().Traverse(nil, func(key, val common.Bytes) bool {
@@ -269,7 +267,7 @@ func sanityChecks(sv *state.StoreView) error {
 				logger.Infof("--------------------------------------------------------")
 				logger.Infof("Validator Candidate: %v, totalStake  = %v", sc.Holder, sc.TotalStake())
 				for _, stake := range sc.Stakes {
-					SCPTWeiTotal = new(big.Int).Add(SCPTWeiTotal, stake.Amount)
+					scptWeiTotal = new(big.Int).Add(scptWeiTotal, stake.Amount)
 					logger.Infof("     Stake: source = %v, stakeAmount = %v", stake.Source, stake.Amount)
 				}
 				logger.Infof("--------------------------------------------------------")
@@ -294,12 +292,12 @@ func sanityChecks(sv *state.StoreView) error {
 				panic(fmt.Sprintf("Failed to decode Account: %v", err))
 			}
 
-			SCPTWei := account.Balance.SCPTWei
-			SPAYWei := account.Balance.SPAYWei
-			SCPTWeiTotal = new(big.Int).Add(SCPTWeiTotal, SCPTWei)
-			SPAYWeiTotal = new(big.Int).Add(SPAYWeiTotal, SPAYWei)
+			scptWei := account.Balance.SCPTWei
+			spayWei := account.Balance.SPAYWei
+			scptWeiTotal = new(big.Int).Add(scptWeiTotal, scptWei)
+			spayWeiTotal = new(big.Int).Add(spayWeiTotal, spayWei)
 
-			logger.Infof("Account: %v, SCPTWei = %v, SPAYWei = %v", account.Address, SCPTWei, SPAYWei)
+			logger.Infof("Account: %v, SCPTWei = %v, SPAYWei = %v", account.Address, scptWei, spayWei)
 		}
 		return true
 	})
@@ -323,19 +321,19 @@ func sanityChecks(sv *state.StoreView) error {
 	ten18 := new(big.Int).SetUint64(1000000000000000000)
 
 	expectedSCPTWeiTotal := new(big.Int).Mul(oneBillion, ten18)
-	if expectedSCPTWeiTotal.Cmp(SCPTWeiTotal) != 0 {
-		return fmt.Errorf("Unmatched SCPTWei total: expected = %v, calculated = %v", expectedSCPTWeiTotal, SCPTWeiTotal)
+	if expectedSCPTWeiTotal.Cmp(scptWeiTotal) != 0 {
+		return fmt.Errorf("Unmatched SCPTWei total: expected = %v, calculated = %v", expectedSCPTWeiTotal, scptWeiTotal)
 	}
 	logger.Infof("Expected   SCPTWei total = %v", expectedSCPTWeiTotal)
-	logger.Infof("Calculated SCPTWei total = %v", SCPTWeiTotal)
+	logger.Infof("Calculated SCPTWei total = %v", scptWeiTotal)
 
 	// Check #3: Sum(SPAYWei) == 5 * 10^9 * 10^18
 	expectedSPAYWeiTotal := new(big.Int).Mul(fiveBillion, ten18)
-	if expectedSPAYWeiTotal.Cmp(SPAYWeiTotal) != 0 {
-		return fmt.Errorf("Unmatched SPAYWei total: expected = %v, calculated = %v", expectedSPAYWeiTotal, SPAYWeiTotal)
+	if expectedSPAYWeiTotal.Cmp(spayWeiTotal) != 0 {
+		return fmt.Errorf("Unmatched SPAYWei total: expected = %v, calculated = %v", expectedSPAYWeiTotal, spayWeiTotal)
 	}
 	logger.Infof("Expected   SPAYWei total = %v", expectedSPAYWeiTotal)
-	logger.Infof("Calculated SPAYWei total = %v", SPAYWeiTotal)
+	logger.Infof("Calculated SPAYWei total = %v", spayWeiTotal)
 
 	return nil
 }

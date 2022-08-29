@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/crypto"
 	pr "github.com/scripttoken/script/p2p/peer"
 	p2ptypes "github.com/scripttoken/script/p2p/types"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSeedPeerConnector(t *testing.T) {
@@ -61,7 +61,7 @@ func TestSeedPeerConnector(t *testing.T) {
 		connected := <-discMgr.seedPeerConnector.Connected
 		assert.True(connected)
 	}
-	allPeers := discMgr.peerTable.GetAllPeers()
+	allPeers := discMgr.peerTable.GetAllPeers(true)
 	assert.Equal(2, len(*allPeers))
 	t.Logf("---------------- All peers ----------------")
 	for _, peer := range *allPeers {
@@ -131,7 +131,7 @@ func TestInboundPeerListener(t *testing.T) {
 		assert.True(inboundDetected)
 	}
 
-	allPeers := discMgr.peerTable.GetAllPeers()
+	allPeers := discMgr.peerTable.GetAllPeers(true)
 	t.Logf("---------------- All peers ----------------")
 	for _, peer := range *allPeers {
 		assert.False(peer.IsOutbound())
@@ -336,7 +336,7 @@ func TestInboundPeerListener(t *testing.T) {
 // 		assert.True(discDetected)
 // 	}
 
-// 	allPeers := discMgr.peerTable.GetAllPeers()
+// 	allPeers := discMgr.peerTable.GetAllPeers(true)
 // 	assert.Equal(numDiscAddresses+2, len(*allPeers))
 // 	t.Logf("---------------- All peers ----------------")
 // 	for _, peer := range *allPeers {

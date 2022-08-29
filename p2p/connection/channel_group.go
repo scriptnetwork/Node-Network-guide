@@ -10,9 +10,7 @@ const (
 	channelSelectionRoundRobinStrategy = 1
 )
 
-//
 // ChannelGroup contains multiple channels to facilitate fair scheduling
-//
 type ChannelGroup struct {
 	mutex *sync.Mutex
 
@@ -24,16 +22,12 @@ type ChannelGroup struct {
 	config ChannelGroupConfig
 }
 
-//
 // ChannelGroupConfig specifies the configuration of the ChannelGroup
-//
 type ChannelGroupConfig struct {
 	selectionStrategy int
 }
 
-//
 // ChannelSelector defines the interface of a Channel selector
-//
 type ChannelSelector interface {
 	nextSelectedChannelIndex(cg *ChannelGroup) (success bool, index int)
 }
@@ -152,10 +146,8 @@ func (cg *ChannelGroup) nextChannelToSendPacket() (success bool, channel *Channe
 	return true, nil
 }
 
-//
 // RoundRobinChannelSelector implments the ChannelSelector interface
 // with the round robin strategy
-//
 type RoundRobinChannelSelector struct {
 	lastUsedChannelIndex int
 }

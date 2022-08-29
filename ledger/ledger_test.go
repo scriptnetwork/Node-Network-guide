@@ -39,10 +39,6 @@ func TestLedgerScreenTx(t *testing.T) {
 	_, res := ledger.ScreenTx(sendTxBytes)
 	assert.True(res.IsOK(), res.Message)
 
-	edgeStakeTxBytes := newRawEdgeStakeTx(chainID, 1, true, accOut, accIns[0], false)
-	_, res = ledger.ScreenTx(edgeStakeTxBytes)
-	assert.True(res.IsOK(), res.Message)
-
 	coinbaseTxBytes := newRawCoinbaseTx(chainID, ledger, 1)
 	_, res = ledger.ScreenTx(coinbaseTxBytes)
 	assert.Equal(result.CodeUnauthorizedTx, res.Code, res.Message)
@@ -58,24 +54,19 @@ func TestLedgerProposerBlockTxs(t *testing.T) {
 	// Insert send transactions into the mempool
 	numMempoolTxs := 2 * core.MaxNumRegularTxsPerBlock
 	rawSendTxs := []common.Bytes{}
-	rawEdgeStakeTxs := []common.Bytes{}
 	for idx := 0; idx < numMempoolTxs; idx++ {
 		sequence := 1
 		sendTxBytes := newRawSendTx(chainID, sequence, true, accOut, accIns[idx], true)
 		err := mempool.InsertTransaction(sendTxBytes)
 		assert.Nil(err, fmt.Sprintf("Mempool insertion error: %v", err))
 		rawSendTxs = append(rawSendTxs, sendTxBytes)
-		edgeStakeTxBytes := newRawEdgeStakeTx(chainID, sequence, true, accOut, accIns[idx], true)
-		err = mempool.InsertTransaction(edgeStakeTxBytes)
-		assert.Nil(err, fmt.Sprintf("Mempool insertion error: %v", err))
-		rawEdgeStakeTxs = append(rawEdgeStakeTxs, edgeStakeTxBytes)
 	}
 	assert.Equal(numMempoolTxs, mempool.Size())
 
 	startTime := time.Now()
 
 	// Propose block transactions
-	_, blockTxs, res := ledger.ProposeBlockTxs(nil)
+	_, blockTxs, res := ledger.ProposeBlockTxs(nil, true)
 
 	endTime := time.Now()
 	elapsed := endTime.Sub(startTime)
@@ -110,32 +101,6 @@ func TestLedgerProposerBlockTxs(t *testing.T) {
 				log.Infof("tx fee: %v, feeDiff: %v", currSendTx.Fee, feeDiff)
 			}
 			prevSendTx = currSendTx
-		}
-	}
-
-	// Transaction sanity checks
-	var prevEdgeStakeTx *types.EdgeStakeTx
-	for idx := 0; idx < expectedTotalNumTx; idx++ {
-		rawTx := blockTxs[idx]
-		tx, err := types.TxFromBytes(rawTx)
-		assert.Nil(err)
-		switch tx.(type) {
-		// case *types.CoinbaseTx:
-		// 	assert.Equal(0, idx) // The first tx needs to be a coinbase transaction
-		// 	coinbaseTx := tx.(*types.CoinbaseTx)
-		// 	signBytes := coinbaseTx.SignBytes(chainID)
-		// 	ledger.consensus.PrivateKey().PublicKey().VerifySignature(signBytes, coinbaseTx.Proposer.Signature)
-		case *types.EdgeStakeTx:
-			assert.True(idx >= 0)
-			currEdgeStakeTx := tx.(*types.EdgeStakeTx)
-			if prevEdgeStakeTx != nil {
-				// mempool should works like a priority queue, for the same type of tx (i.e. EdgeStakeTx),
-				// those with higher fee should get reaped first
-				feeDiff := prevEdgeStakeTx.Fee.Minus(currEdgeStakeTx.Fee)
-				assert.True(feeDiff.IsNonnegative())
-				log.Infof("tx fee: %v, feeDiff: %v", currEdgeStakeTx.Fee, feeDiff)
-			}
-			prevEdgeStakeTx = currEdgeStakeTx
 		}
 	}
 }
@@ -365,7 +330,7 @@ func TestValidatorStakeUpdate(t *testing.T) {
 	for h := uint64(0); h < heightDelta1; h++ {
 		es.state.Commit() // increment height
 	}
-	expectedStateHash, _, res := es.consensus.GetLedger().ProposeBlockTxs(nil) // nil skips adding the CoinbaseTx, but it is OK for our test
+	expectedStateHash, _, res := es.consensus.GetLedger().ProposeBlockTxs(nil, true) // nil skips adding the CoinbaseTx, but it is OK for our test
 	blockX := &core.Block{BlockHeader: &core.BlockHeader{
 		Height:    es.state.Height() + 1,
 		StateHash: expectedStateHash,
@@ -383,7 +348,7 @@ func TestValidatorStakeUpdate(t *testing.T) {
 	for h := uint64(0); h < heightDelta2; h++ {
 		es.state.Commit() // increment height
 	}
-	expectedStateHash, _, res = es.consensus.GetLedger().ProposeBlockTxs(nil) // nil skips adding the CoinbaseTx, but it is OK for our test
+	expectedStateHash, _, res = es.consensus.GetLedger().ProposeBlockTxs(nil, true) // nil skips adding the CoinbaseTx, but it is OK for our test
 	blockY := &core.Block{BlockHeader: &core.BlockHeader{
 		Height:    es.state.Height() + 1,
 		StateHash: expectedStateHash,
@@ -676,7 +641,7 @@ func TestGuardianStakeUpdate(t *testing.T) {
 	for h := uint64(0); h < heightDelta1; h++ {
 		es.state.Commit() // increment height
 	}
-	expectedStateHash, _, res := es.consensus.GetLedger().ProposeBlockTxs(nil) // nil skips adding the CoinbaseTx, but it is OK for our test
+	expectedStateHash, _, res := es.consensus.GetLedger().ProposeBlockTxs(nil, true) // nil skips adding the CoinbaseTx, but it is OK for our test
 	blockX := &core.Block{BlockHeader: &core.BlockHeader{
 		Height:    es.state.Height() + 1,
 		StateHash: expectedStateHash,
@@ -694,7 +659,7 @@ func TestGuardianStakeUpdate(t *testing.T) {
 	for h := uint64(0); h < heightDelta2; h++ {
 		es.state.Commit() // increment height
 	}
-	expectedStateHash, _, res = es.consensus.GetLedger().ProposeBlockTxs(nil) // nil skips adding the CoinbaseTx, but it is OK for our test
+	expectedStateHash, _, res = es.consensus.GetLedger().ProposeBlockTxs(nil, true) // nil skips adding the CoinbaseTx, but it is OK for our test
 	blockY := &core.Block{BlockHeader: &core.BlockHeader{
 		Height:    es.state.Height() + 1,
 		StateHash: expectedStateHash,

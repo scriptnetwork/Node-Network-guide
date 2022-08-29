@@ -17,9 +17,9 @@ import (
 
 // blockCmd represents the block command.
 // Example:
-//		scriptcli query block --height=300
-//		scriptcli query block --hash=0xc88485a473527c55c5ddb067b018324b7e390b188e76702bc1db74dfc2dc6d13
 //
+//	scriptcli query block --height=300
+//	scriptcli query block --hash=0xc88485a473527c55c5ddb067b018324b7e390b188e76702bc1db74dfc2dc6d13
 var blockCmd = &cobra.Command{
 	Use:     "block",
 	Short:   "Get block details",
@@ -32,16 +32,19 @@ var blockCmd = &cobra.Command{
 		var err error
 		if len(hashFlag) != 0 {
 			res, err = client.Call("script.GetBlock", rpc.GetBlockArgs{
-				Hash: common.HexToHash(hashFlag),
+				Hash:               common.HexToHash(hashFlag),
+				IncludeEthTxHashes: includeEthTxHashFlag,
 			})
 		} else if endFlag != 0 {
 			res, err = client.Call("script.GetBlocksByRange", rpc.GetBlocksByRangeArgs{
-				Start: common.JSONUint64(startFlag),
-				End:   common.JSONUint64(endFlag),
+				Start:              common.JSONUint64(startFlag),
+				End:                common.JSONUint64(endFlag),
+				IncludeEthTxHashes: includeEthTxHashFlag,
 			})
 		} else {
 			res, err = client.Call("script.GetBlockByHeight", rpc.GetBlockByHeightArgs{
-				Height: common.JSONUint64(heightFlag),
+				Height:             common.JSONUint64(heightFlag),
+				IncludeEthTxHashes: includeEthTxHashFlag,
 			})
 		}
 
@@ -64,4 +67,5 @@ func init() {
 	blockCmd.Flags().Uint64Var(&heightFlag, "height", uint64(0), "height of the block")
 	blockCmd.Flags().Uint64Var(&startFlag, "start", uint64(0), "starting height of the blocks")
 	blockCmd.Flags().Uint64Var(&endFlag, "end", uint64(0), "ending height of the blocks")
+	blockCmd.Flags().BoolVar(&includeEthTxHashFlag, "include_eth_tx_hashes", false, "include eth tx hash for the smart contract transactions")
 }

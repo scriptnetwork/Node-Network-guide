@@ -5,10 +5,10 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/crypto"
 	"github.com/scripttoken/script/rlp"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestVoteEncoding(t *testing.T) {

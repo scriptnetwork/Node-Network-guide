@@ -4,12 +4,12 @@ import (
 	"log"
 	"strings"
 
-	"github.com/spf13/cobra/doc"
 	script "github.com/scripttoken/script/cmd/script/cmd"
 	scriptcli "github.com/scripttoken/script/cmd/scriptcli/cmd"
+	"github.com/spf13/cobra/doc"
 )
 
-func generatescriptcliDoc(filePrepender, linkHandler func(string) string) {
+func generateScriptCLIDoc(filePrepender, linkHandler func(string) string) {
 	var all = scriptcli.RootCmd
 	err := doc.GenMarkdownTreeCustom(all, "./wallet/", filePrepender, linkHandler)
 	if err != nil {
@@ -34,7 +34,7 @@ func main() {
 		return strings.ToLower(name)
 	}
 
-	generatescriptcliDoc(filePrepender, linkHandler)
+	generateScriptCLIDoc(filePrepender, linkHandler)
 	generateScriptDoc(filePrepender, linkHandler)
 	Walk()
 }

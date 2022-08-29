@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package simulation
@@ -10,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	p2ptypes "github.com/scripttoken/script/p2p/types"
 	"github.com/scripttoken/script/rlp"
+	"github.com/stretchr/testify/assert"
 )
 
 type SimMessageHandler struct {

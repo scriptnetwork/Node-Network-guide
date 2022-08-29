@@ -9,8 +9,8 @@ import (
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/findopt"
 	"github.com/mongodb/mongo-go-driver/mongo/updateopt"
-	log "github.com/sirupsen/logrus"
 	"github.com/scripttoken/script/store/database"
+	log "github.com/sirupsen/logrus"
 )
 
 const (

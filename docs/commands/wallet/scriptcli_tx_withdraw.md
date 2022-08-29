@@ -13,7 +13,7 @@ scriptcli tx withdraw [flags]
 ### Examples
 
 ```
-scriptcli tx withdraw --chain="scriptnet" --source=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --holder=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --purpose=0 --seq=8
+scriptcli tx withdraw --chain="privatenet" --source=2E833968E5bB786Ae419c4d13189fB081Cc43bab --holder=2E833968E5bB786Ae419c4d13189fB081Cc43bab --purpose=0 --seq=8
 ```
 
 ### Options

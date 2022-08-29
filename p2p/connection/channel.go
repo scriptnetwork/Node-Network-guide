@@ -4,9 +4,7 @@ import (
 	"github.com/scripttoken/script/common"
 )
 
-//
 // Channel models a bi-directional channel for messsaging between two peers
-//
 type Channel struct {
 	id common.ChannelIDEnum
 
@@ -16,9 +14,7 @@ type Channel struct {
 	config ChannelConfig
 }
 
-//
 // ChannelConfig specifies the configuration of a Channel
-//
 type ChannelConfig struct {
 	priority uint
 }

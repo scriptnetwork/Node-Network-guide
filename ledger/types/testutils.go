@@ -86,14 +86,14 @@ func Accs2TxInputs(seq int, accs ...PrivAccount) []TxInput {
 	for _, acc := range accs {
 		tx := NewTxInput(
 			acc.Account.Address,
-			NewCoins(4, int64(MinimumTransactionFeeSPAYWei)),
+			NewCoins(4, int64(MinimumTransactionFeeSPAYWeiJune2021)),
 			seq)
 		txs = append(txs, tx)
 	}
 	return txs
 }
 
-//turn a list of accounts into basic list of transaction outputs
+// turn a list of accounts into basic list of transaction outputs
 func Accs2TxOutputs(accs ...PrivAccount) []TxOutput {
 	var txs []TxOutput
 	for _, acc := range accs {
@@ -108,7 +108,7 @@ func Accs2TxOutputs(accs ...PrivAccount) []TxOutput {
 
 func MakeSendTx(seq int, accOut PrivAccount, accsIn ...PrivAccount) *SendTx {
 	tx := &SendTx{
-		Fee:     NewCoins(0, int64(MinimumTransactionFeeSPAYWei)),
+		Fee:     NewCoins(0, int64(MinimumTransactionFeeSPAYWeiJune2021)),
 		Inputs:  Accs2TxInputs(seq, accsIn...),
 		Outputs: Accs2TxOutputs(accOut),
 	}
@@ -117,23 +117,6 @@ func MakeSendTx(seq int, accOut PrivAccount, accsIn ...PrivAccount) *SendTx {
 }
 
 func SignSendTx(chainID string, tx *SendTx, accs ...PrivAccount) {
-	signBytes := tx.SignBytes(chainID)
-	for i, _ := range tx.Inputs {
-		tx.Inputs[i].Signature = accs[i].Sign(signBytes)
-	}
-}
-
-func MakeEdgeStakeTx(seq int, accOut PrivAccount, accsIn ...PrivAccount) *EdgeStakeTx {
-	tx := &EdgeStakeTx{
-		Fee:     NewCoins(0, int64(MinimumTransactionFeeSPAYWei)),
-		Inputs:  Accs2TxInputs(seq, accsIn...),
-		Outputs: Accs2TxOutputs(accOut),
-	}
-
-	return tx
-}
-
-func SignEdgeStakeTx(chainID string, tx *EdgeStakeTx, accs ...PrivAccount) {
 	signBytes := tx.SignBytes(chainID)
 	for i, _ := range tx.Inputs {
 		tx.Inputs[i].Signature = accs[i].Sign(signBytes)

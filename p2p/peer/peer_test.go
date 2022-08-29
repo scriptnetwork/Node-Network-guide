@@ -11,13 +11,13 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/crypto"
 	cn "github.com/scripttoken/script/p2p/connection"
 	nu "github.com/scripttoken/script/p2p/netutil"
 	p2ptypes "github.com/scripttoken/script/p2p/types"
 	"github.com/scripttoken/script/rlp"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPeerHandshakeAndCommunication(t *testing.T) {

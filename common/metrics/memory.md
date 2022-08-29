@@ -34,7 +34,7 @@ VmData:    35460 kB
 VmStk:       136 kB
 VmExe:      1020 kB
 VmLib:      1848 kB
-VmSPAY:        36 kB
+VmPTE:        36 kB
 VmSwap:        0 kB
 ```
 
@@ -69,7 +69,7 @@ VmData:    36868 kB
 VmStk:       136 kB
 VmExe:      1024 kB
 VmLib:      1848 kB
-VmSPAY:        40 kB
+VmPTE:        40 kB
 VmSwap:        0 kB
 ```
 
@@ -88,7 +88,7 @@ VmData:    47876 kB
 VmStk:       136 kB
 VmExe:      1024 kB
 VmLib:      1848 kB
-VmSPAY:        64 kB
+VmPTE:        64 kB
 VmSwap:        0 kB
 ```
 
@@ -107,7 +107,7 @@ VmData:    36868 kB
 VmStk:       136 kB
 VmExe:      1020 kB
 VmLib:      1848 kB
-VmSPAY:        40 kB
+VmPTE:        40 kB
 VmSwap:        0 kB
 ```
 
@@ -126,7 +126,7 @@ VmData:    47876 kB
 VmStk:       136 kB
 VmExe:      1020 kB
 VmLib:      1848 kB
-VmSPAY:        60 kB
+VmPTE:        60 kB
 VmSwap:        0 kB
 ```
 
@@ -145,7 +145,7 @@ VmData:    65100 kB
 VmStk:       136 kB
 VmExe:      1048 kB
 VmLib:      1848 kB
-VmSPAY:        80 kB
+VmPTE:        80 kB
 VmSwap:        0 kB
 ```
 
@@ -164,7 +164,7 @@ VmData:   249740 kB
 VmStk:       136 kB
 VmExe:      1048 kB
 VmLib:      1848 kB
-VmSPAY:       448 kB
+VmPTE:       448 kB
 VmSwap:        0 kB
 ```
 
@@ -183,7 +183,7 @@ VmData:   900940 kB
 VmStk:       136 kB
 VmExe:      1048 kB
 VmLib:      1848 kB
-VmSPAY:      1716 kB
+VmPTE:      1716 kB
 VmSwap:     1544 kB
 ```
 
@@ -202,7 +202,7 @@ VmData:    55308 kB
 VmStk:       136 kB
 VmExe:      1048 kB
 VmLib:      1848 kB
-VmSPAY:        64 kB
+VmPTE:        64 kB
 VmSwap:        0 kB
 ```
 
@@ -221,7 +221,7 @@ VmData:   146124 kB
 VmStk:       136 kB
 VmExe:      1048 kB
 VmLib:      1848 kB
-VmSPAY:       240 kB
+VmPTE:       240 kB
 VmSwap:        0 kB
 ```
 
@@ -240,7 +240,7 @@ VmData:   550092 kB
 VmStk:       136 kB
 VmExe:      1048 kB
 VmLib:      1848 kB
-VmSPAY:      1032 kB
+VmPTE:      1032 kB
 VmSwap:        0 kB
 ```
 
@@ -259,7 +259,7 @@ VmData:    67340 kB
 VmStk:       136 kB
 VmExe:      1040 kB
 VmLib:      1848 kB
-VmSPAY:        92 kB
+VmPTE:        92 kB
 VmSwap:        0 kB
 ```
 
@@ -278,7 +278,7 @@ VmData:   271756 kB
 VmStk:       136 kB
 VmExe:      1040 kB
 VmLib:      1848 kB
-VmSPAY:       488 kB
+VmPTE:       488 kB
 VmSwap:        0 kB
 ```
 

@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	p2ptypes "github.com/scripttoken/script/p2p/types"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDefaultChannelGroupAddChannel(t *testing.T) {

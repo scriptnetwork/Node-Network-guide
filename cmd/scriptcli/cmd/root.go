@@ -9,13 +9,13 @@ import (
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/backup"
 
 	homedir "github.com/mitchellh/go-homedir"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/call"
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/daemon"
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/key"
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/query"
 	"github.com/scripttoken/script/cmd/scriptcli/cmd/tx"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var cfgPath string

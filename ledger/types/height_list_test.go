@@ -3,8 +3,8 @@ package types
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/rlp"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHeightListRLPEncoding(t *testing.T) {

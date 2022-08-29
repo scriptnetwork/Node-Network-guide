@@ -17,16 +17,17 @@ import (
 
 // withdrawStakeCmd represents the withdraw stake command
 // Example:
-//		scriptcli tx withdraw --chain="scriptnet" --source=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --holder=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --purpose=0 --seq=8
+//
+//	scriptcli tx withdraw --chain="privatenet" --source=2E833968E5bB786Ae419c4d13189fB081Cc43bab --holder=2E833968E5bB786Ae419c4d13189fB081Cc43bab --purpose=0 --seq=8
 var withdrawStakeCmd = &cobra.Command{
 	Use:     "withdraw",
 	Short:   "withdraw stake to a validator or guardian",
-	Example: `scriptcli tx withdraw --chain="scriptnet" --source=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --holder=98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --purpose=0 --seq=8`,
+	Example: `scriptcli tx withdraw --chain="privatenet" --source=2E833968E5bB786Ae419c4d13189fB081Cc43bab --holder=2E833968E5bB786Ae419c4d13189fB081Cc43bab --purpose=0 --seq=8`,
 	Run:     doWithdrawStakeCmd,
 }
 
 func doWithdrawStakeCmd(cmd *cobra.Command, args []string) {
-	wallet, sourceAddress, err := walletUnlockWithPath(cmd, sourceFlag, pathFlag)
+	wallet, sourceAddress, err := walletUnlockWithPath(cmd, sourceFlag, pathFlag, passwordFlag)
 	if err != nil {
 		return
 	}
@@ -69,7 +70,12 @@ func doWithdrawStakeCmd(cmd *cobra.Command, args []string) {
 
 	client := rpcc.NewRPCClient(viper.GetString(utils.CfgRemoteRPCEndpoint))
 
-	res, err := client.Call("script.BroadcastRawTransaction", rpc.BroadcastRawTransactionArgs{TxBytes: signedTx})
+	var res *rpcc.RPCResponse
+	if asyncFlag {
+		res, err = client.Call("script.BroadcastRawTransactionAsync", rpc.BroadcastRawTransactionArgs{TxBytes: signedTx})
+	} else {
+		res, err = client.Call("script.BroadcastRawTransaction", rpc.BroadcastRawTransactionArgs{TxBytes: signedTx})
+	}
 	if err != nil {
 		utils.Error("Failed to broadcast transaction: %v\n", err)
 	}
@@ -84,10 +90,12 @@ func init() {
 	withdrawStakeCmd.Flags().StringVar(&sourceFlag, "source", "", "Source of the stake")
 	withdrawStakeCmd.Flags().StringVar(&holderFlag, "holder", "", "Holder of the stake")
 	withdrawStakeCmd.Flags().StringVar(&pathFlag, "path", "", "Wallet derivation path")
-	withdrawStakeCmd.Flags().StringVar(&feeFlag, "fee", fmt.Sprintf("%dwei", types.MinimumTransactionFeeSPAYWei), "Fee")
+	withdrawStakeCmd.Flags().StringVar(&feeFlag, "fee", fmt.Sprintf("%dwei", types.MinimumTransactionFeeSPAYWeiJune2021), "Fee")
 	withdrawStakeCmd.Flags().Uint64Var(&seqFlag, "seq", 0, "Sequence number of the transaction")
 	withdrawStakeCmd.Flags().Uint8Var(&purposeFlag, "purpose", 0, "Purpose of staking")
 	withdrawStakeCmd.Flags().StringVar(&walletFlag, "wallet", "soft", "Wallet type (soft|nano)")
+	withdrawStakeCmd.Flags().BoolVar(&asyncFlag, "async", false, "block until tx has been included in the blockchain")
+	withdrawStakeCmd.Flags().StringVar(&passwordFlag, "password", "", "password to unlock the wallet")
 
 	withdrawStakeCmd.MarkFlagRequired("chain")
 	withdrawStakeCmd.MarkFlagRequired("source")

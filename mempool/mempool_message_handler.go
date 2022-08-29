@@ -12,10 +12,8 @@ import (
 	"github.com/scripttoken/script/rlp"
 )
 
-//
 // MempoolMessageHandler handles the messages received over the
 // ChannelIDTransaction channel
-//
 type MempoolMessageHandler struct {
 	mempool *Mempool
 }

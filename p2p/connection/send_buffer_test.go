@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDefaultSendBuffer(t *testing.T) {

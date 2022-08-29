@@ -15,7 +15,7 @@ type UnlockKeyResult struct {
 	Unlocked bool `json:"unlocked"`
 }
 
-func (t *scriptcliRPCService) UnlockKey(args *UnlockKeyArgs, result *UnlockKeyResult) (err error) {
+func (t *ScriptCliRPCService) UnlockKey(args *UnlockKeyArgs, result *UnlockKeyResult) (err error) {
 	address := common.HexToAddress(args.Address)
 	password := args.Password
 	err = t.wallet.Unlock(address, password, nil)
@@ -37,7 +37,7 @@ type LockKeyResult struct {
 	Unlocked bool `json:"unlocked"`
 }
 
-func (t *scriptcliRPCService) LockKey(args *LockKeyArgs, result *LockKeyResult) (err error) {
+func (t *ScriptCliRPCService) LockKey(args *LockKeyArgs, result *LockKeyResult) (err error) {
 	address := common.HexToAddress(args.Address)
 	err = t.wallet.Lock(address)
 	result.Unlocked = t.wallet.IsUnlocked(address)
@@ -57,7 +57,7 @@ type IsKeyUnlockedResult struct {
 	Unlocked bool `json:"unlocked"`
 }
 
-func (t *scriptcliRPCService) IsKeyUnlocked(args *IsKeyUnlockedArgs, result *IsKeyUnlockedResult) (err error) {
+func (t *ScriptCliRPCService) IsKeyUnlocked(args *IsKeyUnlockedArgs, result *IsKeyUnlockedResult) (err error) {
 	address := common.HexToAddress(args.Address)
 	isKeyUnlocked := t.wallet.IsUnlocked(address)
 	result.Unlocked = isKeyUnlocked
@@ -74,7 +74,7 @@ type NewKeyResult struct {
 	Address string `json:"address"`
 }
 
-func (t *scriptcliRPCService) NewKey(args *NewKeyArgs, result *NewKeyResult) (err error) {
+func (t *ScriptCliRPCService) NewKey(args *NewKeyArgs, result *NewKeyResult) (err error) {
 	password := args.Password
 
 	address, err := t.wallet.NewKey(password)
@@ -95,7 +95,7 @@ type ListKeysResult struct {
 	Addresses []string `json:"addresses"`
 }
 
-func (t *scriptcliRPCService) ListKeys(args *ListKeysArgs, result *ListKeysResult) (err error) {
+func (t *ScriptCliRPCService) ListKeys(args *ListKeysArgs, result *ListKeysResult) (err error) {
 	addresses, err := t.wallet.List()
 	if err != nil {
 		return err

@@ -43,8 +43,6 @@ require (
 	github.com/pkg/profile v1.4.0
 	github.com/prysmaticlabs/prysm v0.0.0-20191018160938-a05dca18c7f7
 	github.com/russross/blackfriday v2.0.0+incompatible // indirect
-	github.com/scripttoken/script/common v0.0.0
-	github.com/scripttoken/script/rpc/lib/rpc-codec/jsonrpc2 v0.0.0
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/smira/go-statsd v1.3.1
@@ -52,6 +50,8 @@ require (
 	github.com/spf13/viper v1.5.0
 	github.com/stretchr/testify v1.4.0
 	github.com/syndtr/goleveldb v1.0.0
+	github.com/scripttoken/script/common v0.0.0
+	github.com/scripttoken/script/rpc/lib/rpc-codec/jsonrpc2 v0.0.0
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/wedeploy/gosocketio v0.0.7-beta
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
@@ -61,7 +61,7 @@ require (
 	go.opencensus.io v0.21.0
 	golang.org/x/crypto v0.0.0-20191001170739-f9e2070545dc
 	golang.org/x/net v0.0.0-20191021144547-ec77196f6094
-	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae
+	golang.org/x/sys v0.0.0-20220412071739-889880a91fd5
 	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898 // indirect
 	gopkg.in/karalabe/cookiejar.v2 v2.0.0-20150724131613-8dcd6a7f4951
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce

@@ -1,3 +1,4 @@
+//go:build cluster_deployment
 // +build cluster_deployment
 
 package treestore
@@ -8,10 +9,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/store/database"
 	"github.com/scripttoken/script/store/database/backend"
+	"github.com/stretchr/testify/assert"
 )
 
 func newTestTreeStore() (database.Database, func()) {

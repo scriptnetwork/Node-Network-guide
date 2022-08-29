@@ -7,18 +7,14 @@ import (
 	"github.com/scripttoken/script/crypto"
 )
 
-//
 // Message models the message sent/received through the P2P network
-//
 type Message struct {
 	PeerID    string
 	ChannelID common.ChannelIDEnum
 	Content   interface{}
 }
 
-//
 // NodeInfo provides the information of the corresponding blockchain node of the peer
-//
 type NodeInfo struct {
 	PrivKey     *crypto.PrivateKey `rlp:"-"`
 	PubKey      *crypto.PublicKey  `rlp:"-"`
