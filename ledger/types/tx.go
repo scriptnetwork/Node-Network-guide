@@ -1112,7 +1112,7 @@ func mapChainIDWithoutOffset(chainIDStr string) *big.Int {
 	} else if chainIDStr == "testnet" {
 		return big.NewInt(5)
 	} else if chainIDStr == "scriptnet" {
-		return big.NewInt(6)
+		return big.NewInt(22)
 	}
 
 	chainIDBigInt := new(big.Int).Abs(crypto.Keccak256Hash(common.Bytes(chainIDStr)).Big()) // all other chainIDs

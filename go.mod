@@ -43,6 +43,8 @@ require (
 	github.com/pkg/profile v1.4.0
 	github.com/prysmaticlabs/prysm v0.0.0-20191018160938-a05dca18c7f7
 	github.com/russross/blackfriday v2.0.0+incompatible // indirect
+	github.com/scripttoken/script/common v0.0.0
+	github.com/scripttoken/script/rpc/lib/rpc-codec/jsonrpc2 v0.0.0
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/smira/go-statsd v1.3.1
@@ -50,8 +52,6 @@ require (
 	github.com/spf13/viper v1.5.0
 	github.com/stretchr/testify v1.4.0
 	github.com/syndtr/goleveldb v1.0.0
-	github.com/scripttoken/script/common v0.0.0
-	github.com/scripttoken/script/rpc/lib/rpc-codec/jsonrpc2 v0.0.0
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/wedeploy/gosocketio v0.0.7-beta
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
