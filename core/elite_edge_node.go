@@ -254,10 +254,10 @@ var (
 
 func init() {
 	// Each elite edge node stake deposit needs to be at least 10,000 SPAY
-	MinEliteEdgeNodeStakeDeposit = new(big.Int).Mul(new(big.Int).SetUint64(10000), new(big.Int).SetUint64(1e18))
+	MinEliteEdgeNodeStakeDeposit = new(big.Int).Mul(new(big.Int).SetUint64(5000), new(big.Int).SetUint64(1e18))
 
 	// Each elite edge node stake deposit should not exceed 500,000 SPAY
-	MaxEliteEdgeNodeStakeDeposit = new(big.Int).Mul(new(big.Int).SetUint64(500000), new(big.Int).SetUint64(1e18))
+	MaxEliteEdgeNodeStakeDeposit = new(big.Int).Mul(new(big.Int).SetUint64(5000), new(big.Int).SetUint64(1e18))
 }
 
 //
