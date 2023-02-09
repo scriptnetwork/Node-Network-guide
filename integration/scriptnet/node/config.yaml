@@ -3,7 +3,7 @@ genesis:
   hash: "0xee81d532c5afd8595245434dedb63f53e60b2520b9c738cf0f66204409ea2fd2"
 p2p:
   port: 12000
-  seeds: 3.122.104.158:12000,3.127.170.147:12000
+  seeds: 3.123.228.235:12000,3.127.170.147:12000
   seedPeerOnlyOutbound: true
   address: 127.0.0.1
 log:
