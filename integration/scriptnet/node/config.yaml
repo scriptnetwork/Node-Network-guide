@@ -1,15 +1,13 @@
 # Script configuration
 genesis:
-  hash: "0xee81d532c5afd8595245434dedb63f53e60b2520b9c738cf0f66204409ea2fd2"
+  hash: "0x033e3e1213bea3a61894966eba0e436ccc854e590e8038cc533c8bcf4e669523"
 p2p:
   port: 12000
-  seeds: 3.124.230.191:12000,3.73.215.110:12000,3.127.170.147:12000 
+  seeds: 3.124.230.191:12000,3.73.215.110:12000,3.127.170.147:12000
   seedPeerOnlyOutbound: true
-  address: 127.0.0.1
 log:
   levels: "*:info,guardian:debug"
 storage:
   statePruningRetainedBlocks: 2048
 rpc:
   enabled: true
-
