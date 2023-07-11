@@ -13,7 +13,7 @@ const (
 	StakeForGuardian      uint8 = 1
 	StakeForEliteEdgeNode uint8 = 2
 
-	ReturnLockingPeriod uint64 = 28800      // number of blocks, approximately 2 days with 6 second block time
+	ReturnLockingPeriod uint64 = 201600      // number of blocks, approximately 2 days with 6 second block time
 	InvalidReturnHeight uint64 = ^uint64(0) // max uint64
 )
 
@@ -114,6 +114,17 @@ func (sh *StakeHolder) TotalStake() *big.Int {
 		}
 	}
 	return totalAmount
+}
+
+func (sh *StakeHolder) getStake(source common.Address, withdrawnOnly bool) (*Stake, error) {
+	for _, stake := range sh.Stakes {
+		if stake.Source == source {
+			if !withdrawnOnly || stake.Withdrawn {
+				return stake, nil
+			}
+		}
+	}
+	return nil, fmt.Errorf("Cannot get stake for: %v", source)
 }
 
 func (sh *StakeHolder) depositStake(source common.Address, amount *big.Int) error {

@@ -17,10 +17,10 @@ import (
 //
 //	scriptcli query guardian
 var guardianCmd = &cobra.Command{
-	Use:     "lightning",
+	Use:     "Lightning",
 	Short:   "Get lightning info",
 	Long:    `Get lightning status.`,
-	Example: `scriptcli query guardian`,
+	Example: `scriptcli query lightning`,
 	Run:     doGuardianCmd,
 }
 

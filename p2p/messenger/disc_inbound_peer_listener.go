@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	lru "github.com/hashicorp/golang-lru"
 	"github.com/scripttoken/script/common"
 	"github.com/scripttoken/script/p2p/netutil"
 	pr "github.com/scripttoken/script/p2p/peer"
@@ -34,6 +35,8 @@ type InboundPeerListener struct {
 	config InboundPeerListenerConfig
 
 	bootstrapNodePurgePeerTimer time.Time
+
+	coolOffPool *lru.Cache
 
 	// Life cycle
 	wg      *sync.WaitGroup
@@ -62,6 +65,11 @@ func createInboundPeerListener(discMgr *PeerDiscoveryManager, protocol string, l
 	internalNetAddr := getInternalNetAddress(localAddr)
 	externalNetAddr := getExternalNetAddress(localAddrIP, externalPort, netListenerPort, skipUPNP)
 
+	coolOffPool, err := lru.New(100000)
+	if err != nil {
+		logger.Panicf("Failed to allocate cache, err=%v", err)
+	}
+
 	inboundPeerListener := InboundPeerListener{
 		discMgr:      discMgr,
 		netListener:  netListener,
@@ -70,6 +78,7 @@ func createInboundPeerListener(discMgr *PeerDiscoveryManager, protocol string, l
 		config:       config,
 
 		bootstrapNodePurgePeerTimer: time.Now(),
+		coolOffPool:                 coolOffPool,
 		wg:                          &sync.WaitGroup{},
 	}
 
@@ -160,11 +169,27 @@ func (ipl *InboundPeerListener) listenRoutine() {
 					continue
 				}
 			}
+
+			backOffTimeVal, ok := ipl.coolOffPool.Get(remoteAddr.IP.String())
+			if ok {
+				backOffTime, _ := backOffTimeVal.(time.Time)
+				if backOffTime.After(time.Now()) {
+					logger.Debugf("Rejecting aggressive connection from %v", remoteAddr.String())
+					netconn.Close()
+					continue
+				}
+			}
+
+			ipl.coolOffPool.Add(remoteAddr.IP.String(), time.Now().Add(3*time.Second))
 		}
 
 		go func(netconn net.Conn) {
 			peer, err := ipl.discMgr.connectWithInboundPeer(netconn, true)
 			if err != nil {
+				ipl.coolOffPool.Add(remoteAddr.IP.String(), time.Now().Add(1*time.Minute))
+
+				logger.Debugf("Backing off from invalid handshake %v", remoteAddr.String())
+
 				netconn.Close()
 			}
 			if ipl.inboundCallback != nil {

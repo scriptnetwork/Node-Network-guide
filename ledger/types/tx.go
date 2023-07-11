@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"strconv"
+	"strings"
 	"sync"
 
 	log "github.com/sirupsen/logrus"
@@ -1099,7 +1101,20 @@ func MapChainID(chainIDStr string, blockHeight uint64) *big.Int {
 
 	// For replay attack protection, should NOT use the same chainID as Ethereum
 	chainID := big.NewInt(1).Add(big.NewInt(CHAIN_ID_OFFSET), chainIDWithoutOffset)
-	return chainID
+
+	if blockHeight < common.HeightEnableMetachainSupport {
+		return chainID
+	} else {
+		// attempt to extract the IDs for subchains. ChainID in the form of tsub[1-9][0-9]* is considered as a Script Subchain
+		subchainID, err := extractSubchainID(chainIDStr) // no need to add offset to the subchainIDs
+		if err == nil {
+			// this is a subchain chainID
+			return subchainID
+		} else {
+			// fallback
+			return chainID
+		}
+	}
 }
 
 func mapChainIDWithoutOffset(chainIDStr string) *big.Int {
@@ -1112,9 +1127,38 @@ func mapChainIDWithoutOffset(chainIDStr string) *big.Int {
 	} else if chainIDStr == "testnet" {
 		return big.NewInt(5)
 	} else if chainIDStr == "scriptnet" {
-		return big.NewInt(22)
+		return big.NewInt(382)
 	}
 
 	chainIDBigInt := new(big.Int).Abs(crypto.Keccak256Hash(common.Bytes(chainIDStr)).Big()) // all other chainIDs
 	return chainIDBigInt
+}
+
+// Subchain chainID should have the form tsub[1-9][0-9]*
+func extractSubchainID(chainIDStr string) (*big.Int, error) {
+	if !strings.HasPrefix(chainIDStr, core.SubchainChainIDPrefix) {
+		return nil, fmt.Errorf("invalid subchain ID prefix: %v", chainIDStr)
+	}
+
+	if len(chainIDStr) < 5 {
+		return nil, fmt.Errorf("subchain ID too short: %v", chainIDStr)
+	}
+
+	leadingDigit := chainIDStr[4]
+	if leadingDigit == byte('0') {
+		return nil, fmt.Errorf("the leading digit of the subchain ID should not be zero: %v", chainIDStr)
+	}
+
+	chainIDIntStr := chainIDStr[4:]
+	chainID, err := strconv.Atoi(chainIDIntStr)
+	if err != nil {
+		return nil, err
+	}
+
+	// we require subchain ID to be at least core.MinSubchainID, so it doesn't overlap with the ID of the mainchain
+	if chainID < core.MinSubchainID {
+		return nil, fmt.Errorf("subchain ID too small: %v", chainIDStr)
+	}
+
+	return big.NewInt(int64(chainID)), nil
 }

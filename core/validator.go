@@ -175,10 +175,10 @@ var (
 
 func init() {
 	// Each stake deposit needs to be at least 2,000,000 Script
-	MinValidatorStakeDeposit = new(big.Int).Mul(new(big.Int).SetUint64(5000000), new(big.Int).SetUint64(1000000000000000000))
+	MinValidatorStakeDeposit = new(big.Int).Mul(new(big.Int).SetUint64(1000000), new(big.Int).SetUint64(1000000000000000000))
 
 	// Minimum Validator stake deposit reduced to 200,000 Script
-	MinValidatorStakeDeposit200K = new(big.Int).Mul(new(big.Int).SetUint64(5000000), new(big.Int).SetUint64(1000000000000000000))
+	MinValidatorStakeDeposit200K = new(big.Int).Mul(new(big.Int).SetUint64(1000000), new(big.Int).SetUint64(1000000000000000000))
 }
 
 type ValidatorCandidatePool struct {

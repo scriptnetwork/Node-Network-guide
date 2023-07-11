@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -17,6 +18,7 @@ import (
 
 	"github.com/scripttoken/script/blockchain"
 	"github.com/scripttoken/script/common"
+	"github.com/scripttoken/script/common/timer"
 	"github.com/scripttoken/script/common/util"
 	"github.com/scripttoken/script/consensus"
 	"github.com/scripttoken/script/dispatcher"
@@ -37,6 +39,10 @@ type ScriptRPCService struct {
 	dispatcher *dispatcher.Dispatcher
 	chain      *blockchain.Chain
 	consensus  *consensus.ConsensusEngine
+
+	pendingHeavyGetBlocksCounter           uint64
+	pendingHeavyGetBlocksCounterLock       *sync.Mutex
+	pendingHeavyGetBlocksCounterResetTimer *timer.RepeatTimer
 
 	// Life cycle
 	wg      *sync.WaitGroup
@@ -61,8 +67,13 @@ func NewScriptRPCServer(mempool *mempool.Mempool, ledger *ledger.Ledger, dispatc
 	t := &ScriptRPCServer{
 		ScriptRPCService: &ScriptRPCService{
 			wg: &sync.WaitGroup{},
+
+			pendingHeavyGetBlocksCounter:           0,
+			pendingHeavyGetBlocksCounterLock:       &sync.Mutex{},
+			pendingHeavyGetBlocksCounterResetTimer: timer.NewRepeatTimer("pendingHeavyGetBlocksCounterReset", 30*time.Minute),
 		},
 	}
+	t.pendingHeavyGetBlocksCounterResetTimer.Reset()
 
 	t.mempool = mempool
 	t.ledger = ledger
@@ -83,7 +94,8 @@ func NewScriptRPCServer(mempool *mempool.Mempool, ledger *ledger.Ledger, dispatc
 	}))
 
 	t.server = &http.Server{
-		Handler: t.router,
+		Handler:     t.router,
+		IdleTimeout: viper.GetDuration(common.CfgRPCIdleTimeoutSecs) * time.Second,
 	}
 
 	logger = util.GetLoggerForModule("rpc")
@@ -101,6 +113,9 @@ func (t *ScriptRPCServer) Start(ctx context.Context) {
 	go t.mainLoop()
 
 	t.wg.Add(1)
+	go t.heavyQueryCounterLoop()
+
+	t.wg.Add(1)
 	go t.txCallback()
 }
 
@@ -112,6 +127,22 @@ func (t *ScriptRPCServer) mainLoop() {
 	<-t.ctx.Done()
 	t.stopped = true
 	t.server.Shutdown(t.ctx)
+}
+
+func (t *ScriptRPCServer) heavyQueryCounterLoop() {
+	defer t.wg.Done()
+
+	for {
+		select {
+		case <-t.pendingHeavyGetBlocksCounterResetTimer.Ch:
+			t.pendingHeavyGetBlocksCounterLock.Lock()
+			t.pendingHeavyGetBlocksCounter = 0 // reset the counter to zero at a fixed time interval, otherwise the counter could get stuck if some pending queries never return
+			t.pendingHeavyGetBlocksCounterLock.Unlock()
+		case <-t.ctx.Done():
+			t.stopped = true
+			return
+		}
+	}
 }
 
 func (t *ScriptRPCServer) serve() {
@@ -232,6 +263,7 @@ func (h *timeoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		defer func() {
 			if p := recover(); p != nil {
+				logger.Errorf("Panicked when processing http request: %v", string(debug.Stack()))
 				panicChan <- p
 			}
 		}()

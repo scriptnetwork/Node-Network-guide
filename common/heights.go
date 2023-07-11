@@ -34,7 +34,10 @@ const HeightSupportScriptTokenInSmartContract uint64 = 1 // approximate time: 5p
 const HeightValidatorStakeChangedTo200K uint64 = 1 // approximate time: 12pm Mar 14, 2022 PT
 
 // HeightSupportWrappedScript specifies the block height to support wrapped Script
-const HeightSupportWrappedScript uint64 = 1
+const HeightSupportWrappedScript uint64 = 1 // approximate time: 7pm Sep 28, 2022 PT
+
+// HeightEnableMetachainSupport specifies the block height to enable Script Metachain support (i.e. Mainnet 4.0)
+const HeightEnableMetachainSupport uint64 = 1 // approximate time: 7pm Nov 3, 2022 PT
 
 // CheckpointInterval defines the interval between checkpoints.
 const CheckpointInterval = int64(100)

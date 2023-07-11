@@ -159,7 +159,7 @@ func selectTopStakeHoldersAsValidatorsForBlock(consensus core.ConsensusEngine, b
 		log.Panicf("Failed to get the validator candidate pool, blockHash: %v, isNext: %v, err: %v", blockHash.Hex(), isNext, err)
 	}
 	if vcp == nil {
-		log.Panic("Failed to retrieve the validator candidate pool")
+		log.Panic("Failed to retrieve the validator candidate pool, blockHash: %v, isNext: %v", blockHash.Hex(), isNext)
 	}
 
 	return SelectTopStakeHoldersAsValidators(vcp)

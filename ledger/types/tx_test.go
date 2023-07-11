@@ -18,6 +18,103 @@ import (
 
 var chainID string = "test_chain"
 
+func TestChainID(t *testing.T) {
+
+	//
+	// The IDs for the main chains
+	//
+
+	chainIDStrMainnet := "mainnet"
+	chainIDStr := chainIDStrMainnet
+	chainID := MapChainID(chainIDStr, common.HeightRPCCompatibility+1)
+	assert.True(t, chainID.Cmp(big.NewInt(361)) == 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	chainIDStrTestnet := "testnet"
+	chainIDStr = chainIDStrTestnet
+	chainID = MapChainID(chainIDStr, common.HeightRPCCompatibility+1)
+	assert.True(t, chainID.Cmp(big.NewInt(365)) == 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	chainIDStrScriptnet := "scriptnet"
+	chainIDStr = chainIDStrScriptnet
+	chainID = MapChainID(chainIDStr, common.HeightRPCCompatibility+1)
+	assert.True(t, chainID.Cmp(big.NewInt(366)) == 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	//
+	// Invalid subchain IDs
+	//
+
+	var err error
+	invalidSubchainID0 := "tsub_881" // with an extra underscore
+	chainIDStr = invalidSubchainID0
+	chainID, err = extractSubchainID(chainIDStr)
+	assert.True(t, err != nil, "should be an invalid subchain ID: %v", chainIDStr)
+	chainID = MapChainID(chainIDStr, common.HeightEnableMetachainSupport+1)
+	assert.True(t, chainID.Cmp(big.NewInt(881)) != 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	invalidSubchainID1 := "ts881"
+	chainIDStr = invalidSubchainID1
+	chainID, err = extractSubchainID(chainIDStr)
+	assert.True(t, err != nil, "should be an invalid subchain ID: %v", chainIDStr)
+	chainID = MapChainID(chainIDStr, common.HeightEnableMetachainSupport+1)
+	assert.True(t, chainID.Cmp(big.NewInt(881)) != 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	invalidSubchainID2 := "tsub09998" // leading digit should not be 0
+	chainIDStr = invalidSubchainID2
+	chainID, err = extractSubchainID(chainIDStr)
+	assert.True(t, err != nil, "should be an invalid subchain ID: %v", chainIDStr)
+	chainID = MapChainID(chainIDStr, common.HeightEnableMetachainSupport+1)
+	assert.True(t, chainID.Cmp(big.NewInt(9998)) != 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	invalidSubchainID3 := "tsubabc9" // hex not allowed in chainID
+	chainIDStr = invalidSubchainID3
+	chainID, err = extractSubchainID(chainIDStr)
+	assert.True(t, err != nil, "should be an invalid subchain ID: %v", chainIDStr)
+	chainID = MapChainID(chainIDStr, common.HeightEnableMetachainSupport+1)
+	assert.True(t, chainID.Cmp(big.NewInt(43977)) != 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	invalidSubchainID4 := "tsub999" // subchain ID needs to be at least 1000
+	chainIDStr = invalidSubchainID4
+	chainID, err = extractSubchainID(chainIDStr)
+	assert.True(t, err != nil, "should be an invalid subchain ID: %v", chainIDStr)
+	chainID = MapChainID(chainIDStr, common.HeightEnableMetachainSupport+1)
+	assert.True(t, chainID.Cmp(big.NewInt(999)) != 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	invalidSubchainID5 := "tsub34535873957238957239573985728957283957923528357238572893572983457238957238495893" // subchain ID needs to be smaller than uint64.max
+	chainIDStr = invalidSubchainID5
+	chainID, err = extractSubchainID(chainIDStr)
+	assert.True(t, err != nil, "should be an invalid subchain ID: %v", chainIDStr)
+	chainID = MapChainID(chainIDStr, common.HeightEnableMetachainSupport+1)
+	cid, _ := big.NewInt(0).SetString("34535873957238957239573985728957283957923528357238572893572983457238957238495893", 10)
+	assert.True(t, chainID.Cmp(cid) != 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	//
+	// Valid subchain IDs
+	//
+
+	validSubchainID1 := "tsub1991"
+	chainIDStr = validSubchainID1
+	chainID = MapChainID(chainIDStr, common.HeightEnableMetachainSupport+1)
+	assert.True(t, chainID.Cmp(big.NewInt(1991)) == 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	validSubchainID2 := "tsub4546325235"
+	chainIDStr = validSubchainID2
+	chainID = MapChainID(chainIDStr, common.HeightEnableMetachainSupport+1)
+	assert.True(t, chainID.Cmp(big.NewInt(4546325235)) == 0, "mapped chainID for %v is %v", chainIDStr, chainID)
+	fmt.Printf("extracted chainID for %v: %v\n", chainIDStr, chainID)
+
+	// assert.True(t, false)
+}
+
 func TestCoinbaseTxSignable(t *testing.T) {
 	chainID := "test_chain_id"
 	va1PrivAcc := PrivAccountFromSecret("validator1")
@@ -264,7 +361,7 @@ func TestSendTxSignable2(t *testing.T) {
 	feeInSPAYWei := new(big.Int).SetUint64(1000000000000) // 10^12
 
 	senderAddr := common.HexToAddress("2E833968E5bB786Ae419c4d13189fB081Cc43bab")
-	receiverAddr := common.HexToAddress("98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5")
+	receiverAddr := common.HexToAddress("9F1233798E905E173560071255140b4A8aBd3Ec6")
 	sendTx := &SendTx{
 		Fee: Coins{SCPTWei: big.NewInt(0), SPAYWei: feeInSPAYWei},
 		Inputs: []TxInput{
@@ -283,7 +380,7 @@ func TestSendTxSignable2(t *testing.T) {
 	}
 	signBytes := sendTx.SignBytes(chainID)
 	signBytesHex := hex.EncodeToString(signBytes)
-	expected := "f88980808094000000000000000000000000000000000000000080b86e8a707269766174656e657402f860c78085e8d4a51000eceb942e833968e5bb786ae419c4d13189fb081cc43babd3888ac7230489e800008901158e46f1e87510000280eae99498fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5d3888ac7230489e800008901158e460913d00000"
+	expected := "f88980808094000000000000000000000000000000000000000080b86e8a707269766174656e657402f860c78085e8d4a51000eceb942e833968e5bb786ae419c4d13189fb081cc43babd3888ac7230489e800008901158e46f1e87510000280eae9949f1233798e905e173560071255140b4a8abd3ec6d3888ac7230489e800008901158e460913d00000"
 
 	assert.Equal(t, expected, signBytesHex,
 		"Got unexpected sign string for SendTx. Expected:\n%v\nGot:\n%v", expected, signBytesHex)
@@ -332,7 +429,7 @@ func TestSendTxSignable2(t *testing.T) {
 	signedTxBytesHex := hex.EncodeToString(raw)
 	t.Logf("Signed Tx: %v", signedTxBytesHex)
 
-	expectedSignedTxBytes := "02f8a4c78085e8d4a51000f86ff86d942e833968e5bb786ae419c4d13189fb081cc43babd3888ac7230489e800008901158e46f1e875100002b8415a6e9a2e93487c786f07175998493161e61a5d9613745aa0e2fe51e5db1eaf626f72bfae41d971e88ff3b2c217cf611c2addb266e7d7ebda29cb0e9e5a2f482800eae99498fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5d3888ac7230489e800008901158e460913d00000"
+	expectedSignedTxBytes := "02f8a4c78085e8d4a51000f86ff86d942e833968e5bb786ae419c4d13189fb081cc43babd3888ac7230489e800008901158e46f1e875100002b8415a6e9a2e93487c786f07175998493161e61a5d9613745aa0e2fe51e5db1eaf626f72bfae41d971e88ff3b2c217cf611c2addb266e7d7ebda29cb0e9e5a2f482800eae9949f1233798e905e173560071255140b4a8abd3ec6d3888ac7230489e800008901158e460913d00000"
 	assert.Equal(t, expectedSignedTxBytes, signedTxBytesHex,
 		"Got unexpected signed raw bytes for SendTx. Expected:\n%v\nGot:\n%v", expectedSignedTxBytes, signedTxBytesHex)
 

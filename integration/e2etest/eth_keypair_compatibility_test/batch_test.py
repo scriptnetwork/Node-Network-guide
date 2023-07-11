@@ -9,7 +9,7 @@ import subprocess
 ETHEREUM_ROOT = '~/.ethereum'
 SCRIPTCLI_ROOT = '~/.scriptcli'
 NEW_ACCOUNT_PASSWORD_FILEPATH = './new_account_password.txt'
-FAUCET_ADDRESS = '0x98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5'
+FAUCET_ADDRESS = '0x9f1233798e905e173560071255140b4a8abd3ec6'
 FAUCET_PASSWORD = 'qwertyuiop'
 UNLOCK_KEY_CMD_TMPL = """curl -X POST -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","method":"scriptcli.UnlockKey","params":[{"address":"%s", "password":"%s"}],"id":1}' http://localhost:16889/rpc"""
 SEND_CMD_TMPL = """curl -X POST -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","method":"scriptcli.Send","params":[{"chain_id":"testnet", "from":"%s", "to":"%s", "scptwei":"%s", "spaywei":"%s", "fee":"1000000000000", "sequence":"%s", "async":false}],"id":1}' --silent --output /dev/null http://localhost:16889/rpc"""

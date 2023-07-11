@@ -21,7 +21,7 @@ import (
 
 var weiMultiplier = big.NewInt(1e18)
 var spayRewardPerBlock = big.NewInt(1).Mul(big.NewInt(48), weiMultiplier)    // 48 SPAY per block, corresponds to about 5% *initial* annual inflation rate. The inflation rate naturally approaches 0 as the chain grows.
-var eenSPAYRewardPerBlock = big.NewInt(1).Mul(big.NewInt(38), weiMultiplier) // 38 SPAY per block, corresponds to about 4% *initial* annual inflation rate. The inflation rate naturally approaches 0 as the chain grows.
+var eenspayRewardPerBlock = big.NewInt(1).Mul(big.NewInt(38), weiMultiplier) // 38 SPAY per block, corresponds to about 4% *initial* annual inflation rate. The inflation rate naturally approaches 0 as the chain grows.
 var spayRewardN = 400                                                        // Reward receiver sampling params
 
 var _ TxExecutor = (*CoinbaseTxExecutor)(nil)
@@ -429,7 +429,7 @@ func grantEliteEdgeNodeReward(ledger core.Ledger, view *st.StoreView, guardianVo
 	}
 
 	// the source of the stake divides the block reward proportional to their stake
-	totalReward := big.NewInt(1).Mul(eenSPAYRewardPerBlock, big.NewInt(common.CheckpointInterval))
+	totalReward := big.NewInt(1).Mul(eenspayRewardPerBlock, big.NewInt(common.CheckpointInterval))
 
 	logger.Debugf("grantEliteEdgeNodeReward: totalEffectiveStake = %v, totalReward = %v", totalEffectiveStake, totalReward)
 

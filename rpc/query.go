@@ -4,12 +4,12 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"log"
 	"math/big"
 	"math/rand"
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
 	"github.com/scripttoken/script/blockchain"
@@ -86,7 +86,7 @@ func (t *ScriptRPCService) GetAccount(args *GetAccountArgs, result *GetAccountRe
 		blocks := t.chain.FindBlocksByHeight(height)
 		if len(blocks) == 0 {
 			result.Account = nil
-			return nil
+			return fmt.Errorf("Historical data at given height is not available on current node")
 		}
 
 		deliveredView, err := t.ledger.GetDeliveredSnapshot()
@@ -111,6 +111,11 @@ func (t *ScriptRPCService) GetAccount(args *GetAccountArgs, result *GetAccountRe
 			}
 		}
 
+	}
+
+	if result.Account == nil {
+		log.Debugf("Account with address %v at height %v is not found", address.Hex(), height)
+		return fmt.Errorf("Account with address %v at height %v is not found", address.Hex(), height)
 	}
 
 	return nil
@@ -432,12 +437,41 @@ func (t *ScriptRPCService) GetBlocksByRange(args *GetBlocksByRangeArgs, result *
 	}
 
 	if args.Start > args.End {
-		return errors.New("Starting block must be less than ending block")
+		return errors.New("starting block must be less than ending block")
 	}
 
 	maxBlockRange := common.JSONUint64(5000)
-	if args.End-args.Start > maxBlockRange {
-		return errors.New("Can't retrieve more than 100 blocks at a time")
+	blockStart := args.Start
+	blockEnd := args.End
+	queryBlockRange := blockEnd - blockStart
+	if queryBlockRange > maxBlockRange {
+		return fmt.Errorf("can't retrieve more than %v blocks at a time", maxBlockRange)
+	}
+
+	heavyQueryThreshold := viper.GetUint64(common.CfgRPCGetBlocksHeavyQueryThreshold)
+	isHeavyQuery := uint64(queryBlockRange) > heavyQueryThreshold
+	if isHeavyQuery {
+		t.pendingHeavyGetBlocksCounterLock.Lock()
+		hasTooManyPendingHeavyQueries := t.pendingHeavyGetBlocksCounter > viper.GetUint64(common.CfgRPCMaxHeavyGetBlocksQueryCount)
+		t.pendingHeavyGetBlocksCounterLock.Unlock()
+
+		if hasTooManyPendingHeavyQueries {
+			warningMsg := fmt.Sprintf("too many pending heavy getBlocksByRange queries, rejecting getBlocksByRange query from block %v to %v", blockStart, blockEnd)
+			logger.Warnf(warningMsg)
+			return fmt.Errorf(warningMsg)
+		}
+
+		t.pendingHeavyGetBlocksCounterLock.Lock()
+		t.pendingHeavyGetBlocksCounter += 1
+		t.pendingHeavyGetBlocksCounterLock.Unlock()
+
+		defer func() { // the heavy query has now been processed
+			t.pendingHeavyGetBlocksCounterLock.Lock()
+			if t.pendingHeavyGetBlocksCounter > 0 {
+				t.pendingHeavyGetBlocksCounter -= 1
+			}
+			t.pendingHeavyGetBlocksCounterLock.Unlock()
+		}()
 	}
 
 	blocks := t.chain.FindBlocksByHeight(uint64(args.End))
@@ -756,8 +790,8 @@ func (t *ScriptRPCService) GetEenpByHeight(args *GetEenpByHeightArgs, result *Ge
 	height := uint64(args.Height)
 
 	blockHashEenpPairs := []BlockHashEenpPair{}
-	blocks := t.chain.FindBlocksByHeight(height)
-	for _, b := range blocks {
+	b := t.chain.FindBestBlockByHeight(height)
+	if b != nil {
 		blockHash := b.Hash()
 		stateRoot := b.StateHash
 		blockStoreView := state.NewStoreView(height, stateRoot, db)
@@ -773,6 +807,50 @@ func (t *ScriptRPCService) GetEenpByHeight(args *GetEenpByHeightArgs, result *Ge
 	}
 
 	result.BlockHashEenpPairs = blockHashEenpPairs
+
+	return nil
+}
+
+// ------------------------------ GetEenpStake -----------------------------------
+
+type GetEenpStakeByHeightArgs struct {
+	Height        common.JSONUint64 `json:"height"`
+	Source        common.Address    `json:"source"`
+	Holder        common.Address    `json:"holder"`
+	WithdrawnOnly bool              `json:"withdrawn_only"`
+}
+
+type GetEenpStakeResult struct {
+	Stake core.Stake `json:"stake"`
+}
+
+func (t *ScriptRPCService) GetEenpStakeByHeight(args *GetEenpStakeByHeightArgs, result *GetEenpStakeResult) (err error) {
+	deliveredView, err := t.ledger.GetDeliveredSnapshot()
+	if err != nil {
+		return err
+	}
+
+	db := deliveredView.GetDB()
+	height := uint64(args.Height)
+
+	var stake *core.Stake
+	b := t.chain.FindBestBlockByHeight(height)
+	if b == nil {
+		return fmt.Errorf("Can't find block for height %v", height)
+	}
+
+	stateRoot := b.StateHash
+	blockStoreView := state.NewStoreView(height, stateRoot, db)
+	if blockStoreView == nil { // might have been pruned
+		return fmt.Errorf("the EENP for height %v does not exists, it might have been pruned", height)
+	}
+	eenp := state.NewEliteEdgeNodePool(blockStoreView, true)
+	stake, err = eenp.GetStake(args.Source, args.Holder, args.WithdrawnOnly)
+	if err != nil {
+		return err
+	}
+
+	result.Stake = *stake
 
 	return nil
 }
@@ -938,11 +1016,12 @@ func (t *ScriptRPCService) GetCode(args *GetCodeArgs, result *GetCodeResult) (er
 			return nil
 		}
 
-		deliveredView, err := t.ledger.GetDeliveredSnapshot()
+		// deliveredView, err := t.ledger.GetDeliveredSnapshot()
+		view, err := t.ledger.GetScreenedSnapshot()
 		if err != nil {
 			return err
 		}
-		db := deliveredView.GetDB()
+		db := view.GetDB()
 
 		for _, b := range blocks {
 			if b.Status.IsFinalized() {

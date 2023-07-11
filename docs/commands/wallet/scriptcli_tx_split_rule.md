@@ -13,7 +13,7 @@ scriptcli tx split_rule [flags]
 ### Examples
 
 ```
-scriptcli tx split_rule --chain="scriptnet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --seq=8 --resource_id=die_another_day --addresses=2E833968E5bB786Ae419c4d13189fB081Cc43bab,98fd878cd2267577ea6ac47bcb5ff4dd97d2f9e5 --percentages=30,30 --duration=1000
+scriptcli tx split_rule --chain="scriptnet" --from=2E833968E5bB786Ae419c4d13189fB081Cc43bab --seq=8 --resource_id=die_another_day --addresses=2E833968E5bB786Ae419c4d13189fB081Cc43bab,9F1233798E905E173560071255140b4A8aBd3Ec6 --percentages=30,30 --duration=1000
 ```
 
 ### Options
