@@ -90,7 +90,7 @@ func (g *GuardianEngine) StartNewRound() {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 
-	if g.round < maxRound {
+	if g.round <= maxRound {
 		g.round++
 		if g.nextVote != nil {
 			g.currVote = g.nextVote.Copy()

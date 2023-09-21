@@ -182,10 +182,10 @@ func (mp *Mempool) InsertTransaction(rawTx common.Bytes) error {
 		return DuplicateTxError
 	}
 
-	// if mp.size >= MaxMempoolTxCount {
-	// 	logger.Debugf("Mempool is full")
-	// 	return errors.New("mempool is full, please submit your transaction again later")
-	// }
+	if mp.size >= MaxMempoolTxCount {
+		logger.Debugf("Mempool is full")
+		return errors.New("mempool is full, please submit your transaction again later")
+	}
 
 	var txInfo *core.TxInfo
 	var checkTxRes result.Result

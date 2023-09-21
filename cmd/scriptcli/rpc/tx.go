@@ -124,5 +124,6 @@ func (t *ScriptCliRPCService) Send(args *SendArgs, result *SendResult) (err erro
 	result.TxHash = trpcResult.TxHash
 	result.Block = trpcResult.Block
 
+	defer t.wallet.Lock(from)
 	return nil
 }
