@@ -164,7 +164,7 @@ func init() {
 	// Each stake deposit needs to be at least 10,000 Script
 	MinGuardianStakeDeposit = new(big.Int).Mul(new(big.Int).SetUint64(10000), new(big.Int).SetUint64(1e18))
 
-	// Lowering the guardian stake threshold to 1,000 Script
+	// Lowering the guardian stake threshold to 10,000 Script
 	MinGuardianStakeDeposit1000 = new(big.Int).Mul(new(big.Int).SetUint64(10000), new(big.Int).SetUint64(1e18))
 
 }

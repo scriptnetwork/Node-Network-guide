@@ -245,8 +245,8 @@ func CreateMessenger(pubKey *crypto.PublicKey, seedPeerMultiAddresses []string,
 
 	// pubsub
 	psOpts := []ps.Option{
-		ps.WithMessageSigning(false),
-		ps.WithStrictSignatureVerification(false),
+		ps.WithMessageSigning(true),
+		ps.WithStrictSignatureVerification(true),
 	}
 	pubsub, err := ps.NewGossipSub(ctx, host, psOpts...)
 	if err != nil {

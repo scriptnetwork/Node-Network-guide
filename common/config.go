@@ -217,7 +217,7 @@ func init() {
 
 	viper.SetDefault(CfgGuardianRoundLength, 30)
 
-	viper.SetDefault(CfgMetricsServer, "guardian-metrics.scripttoken.org")
+	viper.SetDefault(CfgMetricsServer, "nodemonitor.script.tv")
 
 	viper.SetDefault(CfgProfEnabled, false)
 	viper.SetDefault(CfgForceGCEnabled, true)

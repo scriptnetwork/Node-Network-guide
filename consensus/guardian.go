@@ -279,11 +279,11 @@ func (g *GuardianEngine) validateVote(vote *core.AggregatedVotes) (res bool) {
 }
 
 func (g *GuardianEngine) checkMultipliesForRound(vote *core.AggregatedVotes, k uint32) bool {
-	// for _, m := range vote.Multiplies {
-	// 	if m > g.maxMultiply(k) {
-	// 		return false
-	// 	}
-	// }
+	for _, m := range vote.Multiplies {
+		if m > g.maxMultiply(k) {
+			return false
+		}
+	}
 	return true
 }
 
