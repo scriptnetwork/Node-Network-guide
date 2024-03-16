@@ -1,4 +1,4 @@
-# This repository is deprecated and no longer maintained.
+# This repository is deprecated and is no longer maintained.
 
 Please go to: 
 
